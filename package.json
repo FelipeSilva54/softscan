@@ -4,20 +4,20 @@
   "main": "index.ts",
   "dependencies": {
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
-    "@react-navigation/native": "^7.3.4",
-    "@react-navigation/native-stack": "^7.17.6",
-    "expo": "~57.0.0",
-    "expo-font": "~57.0.0",
-    "expo-status-bar": "~57.0.0",
-    "react": "19.2.3",
-    "react-native": "0.86.0",
-    "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "4.25.2",
-    "react-native-svg": "15.15.4"
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/native-stack": "^6.11.0",
+    "expo": "~52.0.0",
+    "expo-font": "~13.0.0",
+    "expo-status-bar": "~2.0.0",
+    "react": "18.3.1",
+    "react-native": "0.76.9",
+    "react-native-safe-area-context": "4.12.0",
+    "react-native-screens": "~4.4.0",
+    "react-native-svg": "15.8.0"
   },
   "devDependencies": {
-    "@types/react": "~19.2.2",
-    "typescript": "~6.0.3"
+    "@types/react": "~18.3.12",
+    "typescript": "~5.3.3"
   },
   "scripts": {
     "start": "expo start",
