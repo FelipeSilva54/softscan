@@ -2,13 +2,15 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CardButton } from '../components/CardButton';
+import { Header } from '../components/Header';
 import { colors, spacing, textStyles } from '../theme';
 
 export function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        <View style={styles.header}>
+      <Header showMenu onMenuPress={() => {}} />
+      <View style={styles.content}>
+        <View style={styles.heading}>
           <Text style={styles.headingPrimary}>Olá Lucas!</Text>
           <Text style={styles.headingSecondary}>O que vai escanear?</Text>
           <Text style={styles.subtitle}>Clique nos cards abaixo para usar os serviços</Text>
@@ -35,12 +37,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  container: {
+  content: {
     flex: 1,
     paddingHorizontal: spacing.lg,
-    paddingTop: 140,
+    paddingTop: 90,
   },
-  header: {
+  heading: {
     marginBottom: 40,
   },
   headingPrimary: {
