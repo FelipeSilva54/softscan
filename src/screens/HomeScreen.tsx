@@ -33,12 +33,12 @@ export function HomeScreen() {
           <CardButton
             label="Código de Barras"
             icon="barcode"
-            onPress={() => {}}
+            onPress={() => navigation.navigate('Scanner', { mode: 'boleto' })}
           />
           <CardButton
             label="QR Code"
             icon="qrcode"
-            onPress={() => {}}
+            onPress={() => navigation.navigate('Scanner', { mode: 'pix' })}
           />
         </View>
         <CardButtonHorizontal

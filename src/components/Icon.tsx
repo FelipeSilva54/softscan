@@ -12,7 +12,8 @@ export type IconName =
   | 'money'
   | 'hand-stars'
   | 'heart'
-  | 'menu';
+  | 'menu'
+  | 'flash';
 
 interface IconProps {
   name: IconName;
@@ -346,6 +347,20 @@ export function Icon({ name, size = 32, color = colors.primary }: IconProps) {
             d="M4 22.6667H28"
             stroke={color}
             strokeWidth={2}
+            strokeLinecap="round"
+          />
+        </Svg>
+      );
+
+    case 'flash':
+      // Placeholder simples até o ícone final do design ser fornecido.
+      return (
+        <Svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+          <Path
+            d="M18 3L7 18H15L14 29L25 14H17L18 3Z"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinejoin="round"
             strokeLinecap="round"
           />
         </Svg>

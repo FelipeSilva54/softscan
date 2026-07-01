@@ -6,4 +6,5 @@ export const colors = {
   background: '#F6F7F7',
   white: '#FFFFFF',
   input: '#BEC6D0',
+  error: '#D64545',
 } as const;

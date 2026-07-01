@@ -26,7 +26,13 @@
       "favicon": "./assets/splash-icon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Precisamos da câmera para escanear o código de barras ou QR Code."
+        }
+      ]
     ],
     "extra": {
       "eas": {
