@@ -22,7 +22,7 @@ export function CardButton({ label, icon, onPress }: CardButtonProps) {
         background={TouchableNativeFeedback.Ripple('rgba(0,0,0,0.06)', false)}
       >
         <View style={styles.card}>
-          <Icon name={icon} size={40} />
+          <Icon name={icon} size={32} />
           <Text style={styles.label}>{label}</Text>
         </View>
       </TouchableNativeFeedback>
@@ -41,12 +41,12 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.white,
     borderRadius: radius.lg,
-    height: 187,
+    height: 168,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
+    gap: 72,
   },
   label: {
     ...textStyles.body,
