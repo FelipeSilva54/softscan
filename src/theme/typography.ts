@@ -33,7 +33,7 @@ export const textStyles = {
   heading: {
     fontFamily: fontFamily.semibold,
     fontSize: fontSize.xl,       // 28
-    lineHeight: fontSize.xl * lineHeight.tight,
+    lineHeight: fontSize.xl * lineHeight.normal,
   },
   title: {
     fontFamily: fontFamily.semibold,
@@ -46,14 +46,14 @@ export const textStyles = {
     lineHeight: fontSize.md * lineHeight.normal,
   },
   body: {
-    fontFamily: fontFamily.semibold,
+    fontFamily: fontFamily.medium,
     fontSize: fontSize.sm,       // 16
     lineHeight: fontSize.sm * lineHeight.normal,
   },
   label: {
     fontFamily: fontFamily.semibold,
     fontSize: fontSize.xs,       // 15
-    lineHeight: fontSize.xs * lineHeight.normal,
+    lineHeight: fontSize.xs * lineHeight.relaxed,
   },
 } as const;
 

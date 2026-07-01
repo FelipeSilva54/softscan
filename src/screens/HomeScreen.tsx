@@ -1,21 +1,26 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CardButton } from '../components/CardButton';
-import { colors, spacing } from '../theme';
+import { colors, spacing, textStyles } from '../theme';
 
 export function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headingPrimary}>Olá Lucas!</Text>
+          <Text style={styles.headingSecondary}>O que vai escanear?</Text>
+          <Text style={styles.subtitle}>Clique nos cards abaixo para usar os serviços</Text>
+        </View>
         <View style={styles.row}>
           <CardButton
-            label="Escanear boleto"
+            label="Código de Barras"
             icon="barcode"
             onPress={() => {}}
           />
           <CardButton
-            label="Escanear PIX"
+            label="QR Code"
             icon="qrcode"
             onPress={() => {}}
           />
@@ -33,7 +38,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
+    paddingTop: 140,
+  },
+  header: {
+    marginBottom: 40,
+  },
+  headingPrimary: {
+    ...textStyles.heading,
+    color: colors.primary,
+  },
+  headingSecondary: {
+    ...textStyles.heading,
+    color: colors.secondary,
+  },
+  subtitle: {
+    ...textStyles.body,
+    color: colors.gray,
+    marginTop: spacing.sm,
   },
   row: {
     flexDirection: 'row',

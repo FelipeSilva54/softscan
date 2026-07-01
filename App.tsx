@@ -6,9 +6,8 @@ import {
   useFonts,
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { NavigationContainer } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { colors } from './src/theme';
@@ -28,7 +27,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <StatusBar style="dark" backgroundColor={colors.background} />
+        <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
         <AppNavigator />
       </NavigationContainer>
     </SafeAreaProvider>
