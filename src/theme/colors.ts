@@ -5,4 +5,5 @@ export const colors = {
   text: '#171717',
   background: '#F6F7F7',
   white: '#FFFFFF',
+  input: '#BEC6D0',
 } as const;
