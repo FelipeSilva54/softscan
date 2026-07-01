@@ -52,9 +52,14 @@ export const textStyles = {
   },
   label: {
     fontFamily: fontFamily.semibold,
-    fontSize: fontSize.xs,       // 15
-    lineHeight: fontSize.xs * lineHeight.relaxed,
+    fontSize: fontSize.sm,       // 16
+    lineHeight: fontSize.sm * lineHeight.normal,
   },
+  caption: {
+  fontFamily: fontFamily.semibold,
+   fontSize: fontSize.xs,       // 16
+   lineHeight: fontSize.xs * lineHeight.relaxed,
+},
 } as const;
 
 export const typography = {

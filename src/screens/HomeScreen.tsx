@@ -1,17 +1,31 @@
-import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppLogo } from '../components/AppLogo';
 import { CardButton } from '../components/CardButton';
-import { Header } from '../components/Header';
+import { CardButtonHorizontal } from '../components/CardButtonHorizontal';
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { getUserName } from '../storage/userStorage';
 import { colors, spacing, textStyles } from '../theme';
 
 export function HomeScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    getUserName().then(setUserName);
+  }, []);
+
+  const greeting = userName ? `Olá ${userName}!` : 'Olá!';
+
   return (
     <SafeAreaView style={styles.safe}>
-      <Header showMenu onMenuPress={() => {}} />
-      <View style={styles.content}>
+<View style={styles.content}>
         <View style={styles.heading}>
-          <Text style={styles.headingPrimary}>Olá Lucas!</Text>
+          <AppLogo />
+          <Text style={styles.headingPrimary}>{greeting}</Text>
           <Text style={styles.headingSecondary}>O que vai escanear?</Text>
           <Text style={styles.subtitle}>Clique nos cards abaixo para usar os serviços</Text>
         </View>
@@ -27,6 +41,12 @@ export function HomeScreen() {
             onPress={() => {}}
           />
         </View>
+        <CardButtonHorizontal
+          style={styles.otherOptions}
+          label="Outras opções"
+          icon="menu"
+          onPress={() => navigation.navigate('OtherOptions')}
+        />
       </View>
     </SafeAreaView>
   );
@@ -40,7 +60,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: spacing.lg,
-    paddingTop: 90,
+    paddingTop: 150,
   },
   heading: {
     marginBottom: 40,
@@ -48,6 +68,7 @@ const styles = StyleSheet.create({
   headingPrimary: {
     ...textStyles.heading,
     color: colors.primary,
+    marginTop: spacing.lg,
   },
   headingSecondary: {
     ...textStyles.heading,
@@ -61,5 +82,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: spacing.md,
+  },
+  otherOptions: {
+    marginTop: spacing.md,
   },
 });
