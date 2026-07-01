@@ -10,7 +10,8 @@ export const fontSize = {
   sm: 16,
   md: 17,
   lg: 18,
-  xl: 28,
+  xl: 24,
+  xxl: 28,
 } as const;
 
 export const fontWeight = {
@@ -32,8 +33,8 @@ export const lineHeight = {
 export const textStyles = {
   heading: {
     fontFamily: fontFamily.semibold,
-    fontSize: fontSize.xl,       // 28
-    lineHeight: fontSize.xl * lineHeight.normal,
+    fontSize: fontSize.xxl,       // 28
+    lineHeight: fontSize.xxl * lineHeight.normal,
   },
   title: {
     fontFamily: fontFamily.semibold,
@@ -59,7 +60,12 @@ export const textStyles = {
   fontFamily: fontFamily.semibold,
    fontSize: fontSize.xs,       // 16
    lineHeight: fontSize.xs * lineHeight.relaxed,
-},
+  },
+  input: {
+    fontFamily: fontFamily.medium,
+    fontSize: fontSize.xl,       // 24
+    lineHeight: fontSize.xl * lineHeight.normal,
+  },
 } as const;
 
 export const typography = {
