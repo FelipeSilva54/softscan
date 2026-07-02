@@ -2,7 +2,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Clipboard from 'expo-clipboard';
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
+import { Platform, ScrollView, Share, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { CardButtonSmall } from '../components/CardButtonSmall';
@@ -23,11 +23,17 @@ function formatDate(date?: Date): string {
 
 async function copyToClipboard(value: string) {
   await Clipboard.setStringAsync(value);
-  // Android 13+ (API 33) já mostra o toast nativo "Copiado para a área de transferência"
-  // ao chamar o clipboard — um toast próprio aqui duplicaria a mensagem na tela.
-  if (Platform.OS === 'android' && Platform.Version < 33) {
+  // O toast nativo do Android 13+ para acesso à área de transferência não é
+  // garantido: fabricantes como Xiaomi (MIUI) o suprimem mesmo em versões
+  // recentes. Por isso sempre mostramos o nosso, mesmo arriscando duplicar
+  // em Android "puro" — melhor que copiar sem nenhum feedback visual.
+  if (Platform.OS === 'android') {
     ToastAndroid.show('Código copiado', ToastAndroid.SHORT);
   }
+}
+
+async function shareCode(value: string) {
+  await Share.share({ message: value });
 }
 
 const PIX_KEY_TYPE_LABELS: Record<string, string> = {
@@ -71,7 +77,7 @@ export function ResultScreen() {
           </View>
           <View style={styles.actions}>
             <CardButtonSmall label="Copiar código" icon="copy" onPress={() => copyToClipboard(data.rawValue)} />
-            <CardButtonSmall label="Compartilhar" icon="share" onPress={() => {}} />
+            <CardButtonSmall label="Compartilhar" icon="share" onPress={() => shareCode(data.rawValue)} />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -129,7 +135,11 @@ export function ResultScreen() {
             icon="copy"
             onPress={() => copyToClipboard(type === 'pix' ? data.rawPayload : data.rawBarcode)}
           />
-          <CardButtonSmall label="Compartilhar" icon="share" onPress={() => {}} />
+          <CardButtonSmall
+            label="Compartilhar"
+            icon="share"
+            onPress={() => shareCode(type === 'pix' ? data.rawPayload : data.rawBarcode)}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
