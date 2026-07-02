@@ -49,11 +49,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: spacing.lg,
+    paddingTop: 28,
   },
   title: {
     ...textStyles.heading,
     color: colors.secondary,
-    marginBottom: spacing.xl,
+    marginBottom: 40,
   },
   group: {
     marginTop: spacing.xxxl,

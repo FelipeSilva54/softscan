@@ -7,7 +7,7 @@ interface AppLogoProps {
 
 export function AppLogo({ size = 52 }: AppLogoProps) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 52 52" fill="none">
+    <Svg width={size} height={size} viewBox="5.8583 5.8583 40 40" fill="none">
       <Mask id="mask0_55_282" maskUnits="userSpaceOnUse" x={5} y={5} width={41} height={41}>
         <Circle
           cx={25.8583}

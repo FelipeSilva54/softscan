@@ -26,7 +26,7 @@ export function HomeScreen() {
         <View style={styles.heading}>
           <AppLogo />
           <Text style={styles.headingPrimary}>{greeting}</Text>
-          <Text style={styles.headingSecondary}>O que vai escanear?</Text>
+          <Text style={styles.headingSecondary}>O que deseja escanear?</Text>
           <Text style={styles.subtitle}>Clique nos cards abaixo para usar os serviços</Text>
         </View>
         <View style={styles.row}>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: spacing.lg,
-    paddingTop: 150,
+    paddingTop: 134,
   },
   heading: {
     marginBottom: 40,

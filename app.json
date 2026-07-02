@@ -20,7 +20,7 @@
         "backgroundColor": "#F5F7F8"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.felipesilva18.softscan"
+      "package": "com.softscan.app"
     },
     "web": {
       "favicon": "./assets/splash-icon.png"
