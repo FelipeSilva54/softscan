@@ -1,7 +1,8 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as Clipboard from 'expo-clipboard';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { CardButtonSmall } from '../components/CardButtonSmall';
@@ -20,6 +21,15 @@ function formatDate(date?: Date): string {
   return date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 }
 
+async function copyToClipboard(value: string) {
+  await Clipboard.setStringAsync(value);
+  // Android 13+ (API 33) já mostra o toast nativo "Copiado para a área de transferência"
+  // ao chamar o clipboard — um toast próprio aqui duplicaria a mensagem na tela.
+  if (Platform.OS === 'android' && Platform.Version < 33) {
+    ToastAndroid.show('Código copiado', ToastAndroid.SHORT);
+  }
+}
+
 const PIX_KEY_TYPE_LABELS: Record<string, string> = {
   cpf: 'Chave Pix (CPF)',
   cnpj: 'Chave Pix (CNPJ)',
@@ -29,10 +39,44 @@ const PIX_KEY_TYPE_LABELS: Record<string, string> = {
   desconhecida: 'Chave Pix',
 };
 
+const BARCODE_TYPE_LABELS: Record<string, string> = {
+  qr: 'QR Code',
+  itf14: 'Código de barras (ITF)',
+  code128: 'Código de barras (Code 128)',
+  code39: 'Código de barras (Code 39)',
+  code93: 'Código de barras (Code 93)',
+  codabar: 'Código de barras (Codabar)',
+  ean13: 'Código de barras (EAN-13)',
+  ean8: 'Código de barras (EAN-8)',
+  upc_a: 'Código de barras (UPC-A)',
+  upc_e: 'Código de barras (UPC-E)',
+  pdf417: 'Código de barras (PDF417)',
+  datamatrix: 'Código de barras (Data Matrix)',
+  aztec: 'Código de barras (Aztec)',
+};
+
 export function ResultScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Result'>>();
   const { type, data } = route.params;
+
+  if (type === 'generic') {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <Header onBackPress={() => navigation.popToTop()} />
+        <ScrollView contentContainerStyle={styles.content}>
+          <Text style={styles.title}>{BARCODE_TYPE_LABELS[data.barcodeType] ?? 'Código lido'}</Text>
+          <View style={styles.data}>
+            <Value caption="Conteúdo" value={data.rawValue} />
+          </View>
+          <View style={styles.actions}>
+            <CardButtonSmall label="Copiar código" icon="copy" onPress={() => copyToClipboard(data.rawValue)} />
+            <CardButtonSmall label="Compartilhar" icon="share" onPress={() => {}} />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   if (!data.isValid) {
     return (
@@ -58,8 +102,7 @@ export function ResultScreen() {
           {type === 'pix' ? (
             <>
               <Value caption="Valor" value={formatCurrency(data.amount)} />
-              <Value caption="Beneficiário" value={data.merchantName ?? 'Não informado'} />
-              <Value caption="Cidade" value={data.merchantCity ?? 'Não informado'} />
+              <Value caption="Nome" value={data.merchantName ?? 'Não informado'} />
               <Value
                 caption={PIX_KEY_TYPE_LABELS[data.pixKeyType ?? 'desconhecida']}
                 value={data.pixKey ?? 'Não disponível'}
@@ -81,7 +124,11 @@ export function ResultScreen() {
           )}
         </View>
         <View style={styles.actions}>
-          <CardButtonSmall label="Copiar código" icon="copy" onPress={() => {}} />
+          <CardButtonSmall
+            label="Copiar código"
+            icon="copy"
+            onPress={() => copyToClipboard(type === 'pix' ? data.rawPayload : data.rawBarcode)}
+          />
           <CardButtonSmall label="Compartilhar" icon="share" onPress={() => {}} />
         </View>
       </ScrollView>
@@ -96,11 +143,11 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.lg,
-    paddingTop: 28,
+    paddingTop: 16,
     paddingBottom: spacing.xl,
   },
   title: {
-    ...textStyles.heading,
+    ...textStyles.subheading,
     color: colors.secondary,
   },
   data: {

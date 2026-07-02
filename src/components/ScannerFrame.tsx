@@ -4,18 +4,24 @@ import { colors } from '../theme';
 
 interface ScannerFrameProps {
   shape: 'square' | 'rectangle';
+  screenWidth?: number;
 }
 
 export const FRAME_RADIUS = 28;
 const STROKE_WIDTH = 2;
 const DASH_ARRAY = '28 20';
 
-export function getFrameSize(shape: ScannerFrameProps['shape']) {
-  return shape === 'square' ? { width: 260, height: 260 } : { width: 300, height: 170 };
+export function getFrameSize(shape: ScannerFrameProps['shape'], screenWidth?: number) {
+  if (shape === 'square') return { width: 260, height: 260 };
+
+  // Código de barras de boleto pode ser bem longo; usa quase toda a
+  // largura da tela (com uma margem mínima) em vez de um valor fixo.
+  const width = screenWidth ? Math.max(300, Math.min(screenWidth - 32, 340)) : 300;
+  return { width, height: 170 };
 }
 
-export function ScannerFrame({ shape }: ScannerFrameProps) {
-  const { width, height } = getFrameSize(shape);
+export function ScannerFrame({ shape, screenWidth }: ScannerFrameProps) {
+  const { width, height } = getFrameSize(shape, screenWidth);
   const r = FRAME_RADIUS;
   const inset = STROKE_WIDTH / 2;
   const w = width - STROKE_WIDTH;

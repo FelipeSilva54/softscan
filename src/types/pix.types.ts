@@ -2,6 +2,9 @@ export type PixKeyType = 'cpf' | 'cnpj' | 'email' | 'telefone' | 'aleatoria' | '
 
 export interface PixData {
   isValid: boolean;
+  // Payload EMVCo tem o indicador de formato (campo 00 = "01"). Sem ele o QR
+  // nem chega a se propor a ser um Pix — não é "Pix inválido", é outro QR.
+  isRecognized: boolean;
   rawPayload: string;
   pixKey?: string;
   pixKeyType?: PixKeyType;

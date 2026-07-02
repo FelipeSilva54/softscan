@@ -11,6 +11,7 @@ import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { getHasOnboarded } from '../storage/onboardingStorage';
 import { colors } from '../theme';
 import { BoletoData } from '../types/boleto.types';
+import { GenericScanData } from '../types/generic.types';
 import { PixData } from '../types/pix.types';
 
 export type RootStackParamList = {
@@ -22,7 +23,8 @@ export type RootStackParamList = {
   Scanner: { mode: 'pix' | 'boleto' };
   Result:
     | { type: 'pix'; data: PixData }
-    | { type: 'boleto'; data: BoletoData };
+    | { type: 'boleto'; data: BoletoData }
+    | { type: 'generic'; data: GenericScanData };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

@@ -26,6 +26,7 @@ function parseCobranca(barcode: string): BoletoData {
 
   return {
     isValid,
+    isRecognized: true,
     rawBarcode: barcode,
     format: 'cobranca',
     bankCode,
@@ -38,7 +39,7 @@ function parseCobranca(barcode: string): BoletoData {
 }
 
 function parseConvenio(barcode: string): BoletoData {
-  const dvPosition = barcode[2] === '6' || barcode[2] === '7' ? 'modulo10' : 'modulo11';
+  const dvPosition = barcode[2] === '6' || barcode[2] === '8' ? 'modulo10' : 'modulo11';
   const digitsWithoutDV = barcode.substring(0, 3) + barcode.substring(4);
   const dv = parseInt(barcode[3], 10);
 
@@ -52,6 +53,7 @@ function parseConvenio(barcode: string): BoletoData {
 
   return {
     isValid,
+    isRecognized: true,
     rawBarcode: barcode,
     format: 'convenio',
     amount: valorCentavos > 0 ? valorCentavos / 100 : undefined,
@@ -72,6 +74,7 @@ export function parseBoletoBarcode(rawBarcode: string): BoletoData {
 
   return {
     isValid: false,
+    isRecognized: false,
     rawBarcode,
     format: 'cobranca',
   };

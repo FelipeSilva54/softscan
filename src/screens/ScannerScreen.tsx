@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
+import { BarcodeScanningResult, BarcodeType, CameraView, useCameraPermissions } from 'expo-camera';
 import { StatusBar } from 'expo-status-bar';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -16,6 +16,24 @@ import { parseBoletoBarcode } from '../parsers/boletoParser';
 import { parsePixPayload } from '../parsers/pixParser';
 import { colors, spacing, textStyles } from '../theme';
 
+// Modo "boleto" (card "Código de Barras" da Home) não fica restrito ao
+// ITF-14: lê qualquer formato 1D/2D não-QR suportado pela lib, e o parser
+// de boleto decide se o conteúdo lido é um boleto de verdade ou não.
+const NON_QR_BARCODE_TYPES: BarcodeType[] = [
+  'itf14',
+  'code128',
+  'code39',
+  'code93',
+  'codabar',
+  'ean13',
+  'ean8',
+  'upc_a',
+  'upc_e',
+  'pdf417',
+  'datamatrix',
+  'aztec',
+];
+
 export function ScannerScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Scanner'>>();
@@ -26,23 +44,44 @@ export function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [torchOn, setTorchOn] = useState(false);
   const [scanned, setScanned] = useState(false);
-  const lastScanRef = useRef<string | null>(null);
+  const pendingScanRef = useRef<{ data: string; count: number } | null>(null);
 
   const shape = mode === 'pix' ? 'square' : 'rectangle';
-  const frameSize = getFrameSize(shape);
+  const frameSize = getFrameSize(shape, screenWidth);
   const screenTitle = mode === 'pix' ? 'Escaneie o QR Code' : 'Escaneie o código de barras';
-  const instruction =
-    mode === 'pix' ? 'Aponte a câmera para o QR Code do Pix' : 'Aponte a câmera para o código de barras do boleto';
+  const instruction = mode === 'pix' ? 'Aponte a câmera para o QR Code' : 'Aponte a câmera para o código de barras';
 
-  function handleBarcodeScanned({ data }: BarcodeScanningResult) {
-    if (scanned || data === lastScanRef.current) return;
-    lastScanRef.current = data;
+  // Código de barras 1D (boleto e afins) não tem correção de erro embutida como
+  // o QR Code: uma única leitura com desfoque pode decodificar um dígito errado.
+  // Só aceitamos a leitura depois de vê-la repetir em frames consecutivos, o que
+  // descarta a maior parte dos falsos "inválido".
+  const CONFIRMATIONS_NEEDED = mode === 'pix' ? 1 : 2;
+
+  function handleBarcodeScanned({ data, type }: BarcodeScanningResult) {
+    if (scanned) return;
+
+    const pending = pendingScanRef.current;
+    const count = pending?.data === data ? pending.count + 1 : 1;
+    pendingScanRef.current = { data, count };
+
+    if (count < CONFIRMATIONS_NEEDED) return;
+
     setScanned(true);
 
     if (mode === 'pix') {
-      navigation.replace('Result', { type: 'pix', data: parsePixPayload(data) });
+      const pix = parsePixPayload(data);
+      if (pix.isRecognized) {
+        navigation.replace('Result', { type: 'pix', data: pix });
+      } else {
+        navigation.replace('Result', { type: 'generic', data: { rawValue: data, barcodeType: type } });
+      }
     } else {
-      navigation.replace('Result', { type: 'boleto', data: parseBoletoBarcode(data) });
+      const boleto = parseBoletoBarcode(data);
+      if (boleto.isRecognized) {
+        navigation.replace('Result', { type: 'boleto', data: boleto });
+      } else {
+        navigation.replace('Result', { type: 'generic', data: { rawValue: data, barcodeType: type } });
+      }
     }
   }
 
@@ -84,9 +123,15 @@ export function ScannerScreen() {
       <CameraView
         style={StyleSheet.absoluteFill}
         facing="back"
-        autofocus="on"
+        // Contra-intuitivo: no expo-camera, autofocus="on" foca uma única vez e
+        // TRAVA o foco (bom pra foto, péssimo pro scanner — o usuário aproxima/
+        // afasta/inclina o celular o tempo todo). "off" é o que mantém a câmera
+        // refocando continuamente em ambas as plataformas (no Android já é o
+        // comportamento padrão do preview; no iOS mapeia para
+        // .continuousAutoFocus). Ver expo-camera/ios/Current/CameraEnums.swift.
+        autofocus="off"
         enableTorch={torchOn}
-        barcodeScannerSettings={{ barcodeTypes: mode === 'pix' ? ['qr'] : ['itf14'] }}
+        barcodeScannerSettings={{ barcodeTypes: mode === 'pix' ? ['qr'] : NON_QR_BARCODE_TYPES }}
         onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
       />
 
@@ -133,7 +178,7 @@ export function ScannerScreen() {
             />
           </Svg>
           <View style={{ width: frameSize.width }}>
-            <ScannerFrame shape={shape} />
+            <ScannerFrame shape={shape} screenWidth={screenWidth} />
           </View>
         </View>
 

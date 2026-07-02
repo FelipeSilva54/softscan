@@ -39,11 +39,17 @@ const CURRENCY_CODES: Record<string, string> = {
 };
 
 export function parsePixPayload(rawPayload: string): PixData {
-  const isValid = validateCRC16(rawPayload);
   const fields = parseTLV(rawPayload);
+
+  // Campo 00 (Payload Format Indicator) = "01" é obrigatório e fixo em
+  // qualquer QR EMVCo — é o que diferencia "isso é um Pix com problema" de
+  // "isso não é um Pix, é outro QR qualquer".
+  const isRecognized = fields.some((field) => field.id === '00' && field.value === '01');
+  const isValid = isRecognized && validateCRC16(rawPayload);
 
   const data: PixData = {
     isValid,
+    isRecognized,
     rawPayload,
   };
 
