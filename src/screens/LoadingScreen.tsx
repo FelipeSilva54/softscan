@@ -42,7 +42,7 @@ export function LoadingScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.content}>
-        <Animated.View style={{ transform: [{ rotate }] }}>
+        <Animated.View style={[styles.logo, { transform: [{ rotate }] }]}>
           <AppLogo size={40} />
         </Animated.View>
         <Text style={styles.title}>Preparando tudo…</Text>
@@ -62,6 +62,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingHorizontal: spacing.lg,
     paddingBottom: 36,
+  },
+  logo: {
+    alignSelf: 'flex-start',
   },
   title: {
     ...textStyles.heading,

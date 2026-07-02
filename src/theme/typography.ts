@@ -36,6 +36,11 @@ export const textStyles = {
     fontSize: fontSize.xxl,       // 28
     lineHeight: fontSize.xxl * lineHeight.normal,
   },
+  subheading: {
+    fontFamily: fontFamily.semibold,
+    fontSize: fontSize.xl,       // 24
+    lineHeight: fontSize.xl * lineHeight.normal,
+  },
   title: {
     fontFamily: fontFamily.semibold,
     fontSize: fontSize.lg,       // 18

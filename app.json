@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/splash-icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#F5F7F8"
-    },
     "ios": {
       "supportsTablet": true
     },
@@ -31,6 +26,15 @@
         "expo-camera",
         {
           "cameraPermission": "Precisamos da câmera para escanear o código de barras ou QR Code."
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#F5F7F8"
         }
       ]
     ],

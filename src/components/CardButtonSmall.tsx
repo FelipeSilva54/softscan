@@ -46,13 +46,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: radius.md,
     paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.md,
   },
   label: {
-    ...textStyles.label,
+    ...textStyles.caption,
     color: colors.secondary,
   },
 });

@@ -4,6 +4,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
+import { CardButtonSmall } from '../components/CardButtonSmall';
 import { Header } from '../components/Header';
 import { Value } from '../components/Value';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -52,30 +53,37 @@ export function ResultScreen() {
     <SafeAreaView style={styles.safe}>
       <Header onBackPress={() => navigation.popToTop()} />
       <ScrollView contentContainerStyle={styles.content}>
-        {type === 'pix' ? (
-          <>
-            <Value caption="Valor" value={formatCurrency(data.amount)} />
-            <Value caption="Beneficiário" value={data.merchantName ?? 'Não informado'} />
-            <Value caption="Cidade" value={data.merchantCity ?? 'Não informado'} />
-            <Value
-              caption={PIX_KEY_TYPE_LABELS[data.pixKeyType ?? 'desconhecida']}
-              value={data.pixKey ?? 'Não disponível'}
-            />
-            {data.txid && <Value caption="Identificador (txid)" value={data.txid} />}
-            {data.isDynamic && !data.pixKey && (
-              <Text style={styles.notice}>
-                QR dinâmico — verifique o valor final no app do seu banco antes de pagar.
-              </Text>
-            )}
-          </>
-        ) : (
-          <>
-            <Value caption="Valor" value={formatCurrency(data.amount)} />
-            <Value caption="Vencimento" value={formatDate(data.dueDate)} />
-            <Value caption="Instituição" value={data.bankName ?? `Banco ${data.bankCode ?? ''}`} />
-            <Value caption="Código de barras" value={data.rawBarcode} />
-          </>
-        )}
+        <Text style={styles.title}>{type === 'pix' ? 'Dados do Pix' : 'Dados do boleto'}</Text>
+        <View style={styles.data}>
+          {type === 'pix' ? (
+            <>
+              <Value caption="Valor" value={formatCurrency(data.amount)} />
+              <Value caption="Beneficiário" value={data.merchantName ?? 'Não informado'} />
+              <Value caption="Cidade" value={data.merchantCity ?? 'Não informado'} />
+              <Value
+                caption={PIX_KEY_TYPE_LABELS[data.pixKeyType ?? 'desconhecida']}
+                value={data.pixKey ?? 'Não disponível'}
+              />
+              {data.txid && <Value caption="Identificador (txid)" value={data.txid} />}
+              {data.isDynamic && !data.pixKey && (
+                <Text style={styles.notice}>
+                  QR dinâmico — verifique o valor final no app do seu banco antes de pagar.
+                </Text>
+              )}
+            </>
+          ) : (
+            <>
+              <Value caption="Valor" value={formatCurrency(data.amount)} />
+              <Value caption="Vencimento" value={formatDate(data.dueDate)} />
+              <Value caption="Instituição" value={data.bankName ?? `Banco ${data.bankCode ?? ''}`} />
+              <Value caption="Código de barras" value={data.rawBarcode} />
+            </>
+          )}
+        </View>
+        <View style={styles.actions}>
+          <CardButtonSmall label="Copiar código" icon="copy" onPress={() => {}} />
+          <CardButtonSmall label="Compartilhar" icon="share" onPress={() => {}} />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -88,8 +96,21 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.lg,
+    paddingTop: 28,
     paddingBottom: spacing.xl,
-    gap: spacing.lg,
+  },
+  title: {
+    ...textStyles.heading,
+    color: colors.secondary,
+  },
+  data: {
+    marginTop: 40,
+    gap: 28,
+  },
+  actions: {
+    flexDirection: 'row',
+    marginTop: 48,
+    gap: spacing.md,
   },
   errorContent: {
     flex: 1,

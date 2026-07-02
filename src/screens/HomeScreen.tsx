@@ -24,7 +24,7 @@ export function HomeScreen() {
     <SafeAreaView style={styles.safe}>
 <View style={styles.content}>
         <View style={styles.heading}>
-          <AppLogo />
+          <AppLogo size={40} />
           <Text style={styles.headingPrimary}>{greeting}</Text>
           <Text style={styles.headingSecondary}>O que deseja escanear?</Text>
           <Text style={styles.subtitle}>Clique nos cards abaixo para usar os serviços</Text>
