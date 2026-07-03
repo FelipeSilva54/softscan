@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { HistoryScreen } from '../screens/HistoryScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LoadingScreen } from '../screens/LoadingScreen';
 import { NameScreen } from '../screens/NameScreen';
@@ -20,11 +21,12 @@ export type RootStackParamList = {
   Loading: undefined;
   Home: undefined;
   OtherOptions: undefined;
+  History: undefined;
   Scanner: { mode: 'pix' | 'boleto' };
   Result:
-    | { type: 'pix'; data: PixData }
-    | { type: 'boleto'; data: BoletoData }
-    | { type: 'generic'; data: GenericScanData };
+    | { type: 'pix'; data: PixData; name?: string; id?: string; scannedAt?: string }
+    | { type: 'boleto'; data: BoletoData; name?: string; id?: string; scannedAt?: string }
+    | { type: 'generic'; data: GenericScanData; name?: string; id?: string; scannedAt?: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,6 +49,7 @@ export function AppNavigator() {
       <Stack.Screen name="Loading" component={LoadingScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="OtherOptions" component={OtherOptionsScreen} />
+      <Stack.Screen name="History" component={HistoryScreen} />
       <Stack.Screen name="Scanner" component={ScannerScreen} />
       <Stack.Screen name="Result" component={ResultScreen} />
     </Stack.Navigator>

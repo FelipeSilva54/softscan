@@ -2,7 +2,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Clipboard from 'expo-clipboard';
 import React, { useState } from 'react';
-import { Platform, ScrollView, Share, StyleSheet, Text, ToastAndroid, View } from 'react-native';
+import { Alert, Platform, ScrollView, Share, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { CardButtonSmall } from '../components/CardButtonSmall';
@@ -10,6 +10,7 @@ import { Header } from '../components/Header';
 import { SaveResultSheet } from '../components/SaveResultSheet';
 import { Value } from '../components/Value';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { removeScan, saveScan, updateScanName } from '../storage/historyStorage';
 import { colors, spacing, textStyles } from '../theme';
 
 function formatCurrency(amount?: number): string {
@@ -66,10 +67,50 @@ export function ResultScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Result'>>();
   const { type, data } = route.params;
+  const [name, setName] = useState(route.params.name);
+  const [recordId, setRecordId] = useState(route.params.id);
   const [isSaveSheetVisible, setSaveSheetVisible] = useState(false);
+  const isSaved = !!recordId;
 
-  function handleSaveResult(name: string) {
-    // TODO: persistir no histórico local (src/storage/historyStorage.ts) quando implementado
+  async function handleSaveName(newName: string) {
+    if (recordId) {
+      await updateScanName(recordId, newName);
+      setName(newName);
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Nome atualizado', ToastAndroid.SHORT);
+      }
+      return;
+    }
+
+    const saved = await saveScan({ ...route.params, name: newName });
+    setRecordId(saved.id);
+    setName(newName);
+    if (Platform.OS === 'android') {
+      ToastAndroid.show('Resultado salvo no histórico', ToastAndroid.SHORT);
+    }
+  }
+
+  function handleRemove() {
+    if (!recordId) return;
+
+    Alert.alert(
+      'Remover resultado',
+      'Esse resultado será removido do histórico e não poderá ser recuperado.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Remover',
+          style: 'destructive',
+          onPress: async () => {
+            await removeScan(recordId);
+            navigation.navigate('History');
+            if (Platform.OS === 'android') {
+              ToastAndroid.show('Resultado removido', ToastAndroid.SHORT);
+            }
+          },
+        },
+      ]
+    );
   }
 
   if (type === 'generic') {
@@ -77,7 +118,7 @@ export function ResultScreen() {
       <SafeAreaView style={styles.safe}>
         <Header onBackPress={() => navigation.popToTop()} />
         <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.title}>{BARCODE_TYPE_LABELS[data.barcodeType] ?? 'Código lido'}</Text>
+          <Text style={styles.title}>{name ?? BARCODE_TYPE_LABELS[data.barcodeType] ?? 'Código lido'}</Text>
           <View style={styles.data}>
             <Value caption="Conteúdo" value={data.rawValue} />
           </View>
@@ -89,13 +130,26 @@ export function ResultScreen() {
           >
             <CardButtonSmall label="Copiar código" icon="copy" onPress={() => copyToClipboard(data.rawValue)} />
             <CardButtonSmall label="Compartilhar" icon="share" onPress={() => shareCode(data.rawValue)} />
-            <CardButtonSmall label="Salvar" icon="save" onPress={() => setSaveSheetVisible(true)} />
+            {isSaved ? (
+              <>
+                <CardButtonSmall label="Editar nome" icon="edit" onPress={() => setSaveSheetVisible(true)} />
+                <CardButtonSmall
+                  label="Remover"
+                  icon="save-remove"
+                  iconColor={colors.error}
+                  onPress={handleRemove}
+                />
+              </>
+            ) : (
+              <CardButtonSmall label="Salvar" icon="save" onPress={() => setSaveSheetVisible(true)} />
+            )}
           </ScrollView>
         </ScrollView>
         <SaveResultSheet
           visible={isSaveSheetVisible}
           onClose={() => setSaveSheetVisible(false)}
-          onSave={handleSaveResult}
+          onSave={handleSaveName}
+          initialName={name}
         />
       </SafeAreaView>
     );
@@ -120,7 +174,7 @@ export function ResultScreen() {
     <SafeAreaView style={styles.safe}>
       <Header onBackPress={() => navigation.popToTop()} />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>{type === 'pix' ? 'Dados do Pix' : 'Dados do boleto'}</Text>
+        <Text style={styles.title}>{name ?? (type === 'pix' ? 'Dados do Pix' : 'Dados do boleto')}</Text>
         <View style={styles.data}>
           {type === 'pix' ? (
             <>
@@ -162,13 +216,21 @@ export function ResultScreen() {
             icon="share"
             onPress={() => shareCode(type === 'pix' ? data.rawPayload : data.rawBarcode)}
           />
-          <CardButtonSmall label="Salvar" icon="save" onPress={() => setSaveSheetVisible(true)} />
+          {isSaved ? (
+            <>
+              <CardButtonSmall label="Editar nome" icon="edit" onPress={() => setSaveSheetVisible(true)} />
+              <CardButtonSmall label="Remover" icon="save-remove" iconColor={colors.error} onPress={handleRemove} />
+            </>
+          ) : (
+            <CardButtonSmall label="Salvar" icon="save" onPress={() => setSaveSheetVisible(true)} />
+          )}
         </ScrollView>
       </ScrollView>
       <SaveResultSheet
         visible={isSaveSheetVisible}
         onClose={() => setSaveSheetVisible(false)}
-        onSave={handleSaveResult}
+        onSave={handleSaveName}
+        initialName={name}
         placeholder={type === 'pix' ? 'Ex: Pix da Sofia' : 'Ex: Boleto da Enel'}
       />
     </SafeAreaView>

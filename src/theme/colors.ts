@@ -8,5 +8,5 @@ export const colors = {
   input: '#BEC6D0',
   error: '#D64545',
   border: '#DDE6E9',
-  overlay: 'rgba(2, 39, 67, 0.45)',
+  overlay: 'rgba(0, 0, 0, 0.55)',
 } as const;

@@ -14,10 +14,11 @@ interface CardButtonSmallProps {
   label: string;
   icon: IconName;
   onPress: () => void;
+  iconColor?: string;
   style?: StyleProp<ViewStyle>;
 }
 
-export function CardButtonSmall({ label, icon, onPress, style }: CardButtonSmallProps) {
+export function CardButtonSmall({ label, icon, onPress, iconColor, style }: CardButtonSmallProps) {
   return (
     <View style={[styles.shadowWrapper, style]}>
       <View style={styles.wrapper}>
@@ -26,7 +27,7 @@ export function CardButtonSmall({ label, icon, onPress, style }: CardButtonSmall
           background={TouchableNativeFeedback.Ripple('rgba(0,0,0,0.06)', false)}
         >
           <View style={styles.card}>
-            <Icon name={icon} size={40} />
+            <Icon name={icon} size={40} color={iconColor} />
             <Text style={styles.label}>{label}</Text>
           </View>
         </TouchableNativeFeedback>

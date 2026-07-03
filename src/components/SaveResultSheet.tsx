@@ -11,9 +11,9 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  ToastAndroid,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, radius, spacing, textStyles } from '../theme';
 import { Button } from './Button';
 import { Input } from './Input';
@@ -28,6 +28,7 @@ interface SaveResultSheetProps {
   visible: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
+  initialName?: string;
   placeholder?: string;
 }
 
@@ -35,16 +36,31 @@ export function SaveResultSheet({
   visible,
   onClose,
   onSave,
+  initialName = '',
   placeholder = 'Ex: Pix da Sofia',
 }: SaveResultSheetProps) {
-  const [name, setName] = useState('');
+  const insets = useSafeAreaInsets();
+  const [name, setName] = useState(initialName);
   const [isMounted, setIsMounted] = useState(visible);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, () => setIsKeyboardVisible(true));
+    const hideSub = Keyboard.addListener(hideEvent, () => setIsKeyboardVisible(false));
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     if (visible) {
       setIsMounted(true);
+      setName(initialName);
       translateY.setValue(SCREEN_HEIGHT);
       Animated.parallel([
         Animated.timing(translateY, {
@@ -94,18 +110,19 @@ export function SaveResultSheet({
     if (!trimmedName) return;
 
     onSave(trimmedName);
-    animateClose(() => {
-      onClose();
-      if (Platform.OS === 'android') {
-        ToastAndroid.show('Resultado salvo no histórico', ToastAndroid.SHORT);
-      }
-    });
+    animateClose(onClose);
   }
 
   const panResponder = useRef(
     PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onStartShouldSetPanResponderCapture: () => false,
       onMoveShouldSetPanResponder: (_, gesture) =>
-        gesture.dy > 4 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+        Math.abs(gesture.dy) > 2 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      onMoveShouldSetPanResponderCapture: (_, gesture) =>
+        Math.abs(gesture.dy) > 2 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      onPanResponderTerminationRequest: () => false,
+      onShouldBlockNativeResponder: () => true,
       onPanResponderMove: (_, gesture) => {
         if (gesture.dy > 0) {
           translateY.setValue(gesture.dy);
@@ -138,19 +155,22 @@ export function SaveResultSheet({
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           pointerEvents="box-none"
         >
-          <Animated.View style={[styles.sheet, { transform: [{ translateY }] }]}>
-            <View {...panResponder.panHandlers} style={styles.dragArea}>
+          <Animated.View
+            style={[
+              styles.sheet,
+              {
+                paddingBottom: isKeyboardVisible ? spacing.lg : insets.bottom + spacing.xl,
+                transform: [{ translateY }],
+              },
+            ]}
+          >
+            <View {...panResponder.panHandlers} collapsable={false} style={styles.dragArea}>
               <View style={styles.handle} />
+              <Text style={styles.title}>Digite um nome</Text>
             </View>
             <View style={styles.content}>
-              <Text style={styles.title}>Digite um nome</Text>
               <Input value={name} onChangeText={setName} placeholder={placeholder} autoCapitalize="sentences" />
-              <Button
-                label="Salvar resultado"
-                onPress={handleSave}
-                disabled={!name.trim()}
-                style={styles.button}
-              />
+              <Button label="Salvar resultado" onPress={handleSave} disabled={!name.trim()} />
             </View>
           </Animated.View>
         </KeyboardAvoidingView>
@@ -174,11 +194,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
-    paddingBottom: spacing.xxl,
   },
   dragArea: {
     alignItems: 'center',
-    paddingVertical: spacing.sm,
+    paddingTop: spacing.sm,
   },
   handle: {
     width: 40,
@@ -188,13 +207,14 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.lg,
-    gap: spacing.lg,
+    marginTop: spacing.md,
+    gap: spacing.xxl,
   },
   title: {
     ...textStyles.subheading,
     color: colors.secondary,
-  },
-  button: {
-    marginTop: spacing.xs,
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.lg,
+    alignSelf: 'flex-start',
   },
 });

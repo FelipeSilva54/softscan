@@ -1,12 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CardButtonHorizontal } from '../components/CardButtonHorizontal';
 import { Header } from '../components/Header';
+import { RootStackParamList } from '../navigation/AppNavigator';
 import { colors, spacing, textStyles } from '../theme';
 
 export function OtherOptionsScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -16,7 +18,7 @@ export function OtherOptionsScreen() {
         <CardButtonHorizontal
           label="Histórico"
           icon="history"
-          onPress={() => {}}
+          onPress={() => navigation.navigate('History')}
         />
         <View style={styles.group}>
           <Text style={styles.groupLabel}>Sobre o app</Text>

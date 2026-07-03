@@ -68,7 +68,7 @@ export const textStyles = {
   },
   input: {
     fontFamily: fontFamily.medium,
-    fontSize: fontSize.xl,       // 24
+    fontSize: 20,
     lineHeight: fontSize.xl * lineHeight.normal,
   },
 } as const;

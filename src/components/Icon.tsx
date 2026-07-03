@@ -16,7 +16,9 @@ export type IconName =
   | 'flash'
   | 'save'
   | 'search'
-  | 'close';
+  | 'close'
+  | 'edit'
+  | 'save-remove';
 
 interface IconProps {
   name: IconName;
@@ -453,6 +455,73 @@ export function Icon({ name, size = 32, color = colors.primary }: IconProps) {
               strokeLinejoin="round"
             />
           </G>
+        </Svg>
+      );
+
+    case 'edit':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+          <Path
+            opacity={0.4}
+            d="M14.6665 2.66675H11.9998C5.33317 2.66675 2.6665 5.33341 2.6665 12.0001V20.0001C2.6665 26.6667 5.33317 29.3334 11.9998 29.3334H19.9998C26.6665 29.3334 29.3332 26.6667 29.3332 20.0001V17.3334"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Path
+            d="M21.3865 4.02627L10.8798 14.533C10.4798 14.933 10.0798 15.7197 9.99984 16.293L9.42651 20.3063C9.21317 21.7597 10.2398 22.773 11.6932 22.573L15.7065 21.9997C16.2665 21.9197 17.0532 21.5197 17.4665 21.1197L27.9732 10.6129C29.7865 8.79961 30.6399 6.69294 27.9732 4.02627C25.3065 1.3596 23.1999 2.21294 21.3865 4.02627Z"
+            stroke={color}
+            strokeWidth={2}
+            strokeMiterlimit={10}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Path
+            opacity={0.4}
+            d="M19.8804 5.5332C20.7737 8.71987 23.267 11.2132 26.467 12.1199"
+            stroke={color}
+            strokeWidth={2}
+            strokeMiterlimit={10}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      );
+
+    case 'save-remove':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+          <Path
+            d="M21.3332 11.9865V27.1332C21.3332 29.0665 19.9465 29.8799 18.2532 28.9465L13.0132 26.0265C12.4532 25.7199 11.5465 25.7199 10.9865 26.0265L5.7465 28.9465C4.05317 29.8799 2.6665 29.0665 2.6665 27.1332V11.9865C2.6665 9.7065 4.53317 7.83984 6.81317 7.83984H17.1865C19.4665 7.83984 21.3332 9.7065 21.3332 11.9865Z"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <G opacity={0.4}>
+            <Path
+              d="M10.1196 17.8798L13.8796 14.1196"
+              stroke={color}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <Path
+              d="M13.8796 17.8798L10.1196 14.1196"
+              stroke={color}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </G>
+          <Path
+            d="M29.3332 6.8134V21.9601C29.3332 23.8934 27.9465 24.7067 26.2532 23.7734L21.3332 21.0267V11.9867C21.3332 9.70673 19.4665 7.84008 17.1865 7.84008H10.6665V6.8134C10.6665 4.5334 12.5332 2.66675 14.8132 2.66675H25.1865C27.4665 2.66675 29.3332 4.5334 29.3332 6.8134Z"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </Svg>
       );
 
