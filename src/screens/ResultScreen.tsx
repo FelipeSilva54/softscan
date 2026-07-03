@@ -103,7 +103,7 @@ export function ResultScreen() {
           style: 'destructive',
           onPress: async () => {
             await removeScan(recordId);
-            navigation.navigate('History');
+            navigation.reset({ index: 1, routes: [{ name: 'Home' }, { name: 'History' }] });
             if (Platform.OS === 'android') {
               ToastAndroid.show('Resultado removido', ToastAndroid.SHORT);
             }

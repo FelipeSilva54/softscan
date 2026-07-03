@@ -75,5 +75,6 @@ const styles = StyleSheet.create({
     padding: 0,
     ...textStyles.label,
     color: colors.secondary,
+    textAlignVertical: 'center',
   },
 });

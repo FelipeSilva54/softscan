@@ -19,27 +19,34 @@ interface CardButtonHorizontalProps {
 
 export function CardButtonHorizontal({ label, icon, onPress, style }: CardButtonHorizontalProps) {
   return (
-    <View style={[styles.wrapper, style]}>
-      <TouchableNativeFeedback
-        onPress={onPress}
-        background={TouchableNativeFeedback.Ripple('rgba(0,0,0,0.06)', false)}
-      >
-        <View style={styles.card}>
-          <Icon name={icon} size={32} />
-          <Text style={styles.label}>{label}</Text>
-        </View>
-      </TouchableNativeFeedback>
+    <View style={[styles.shadowWrapper, style]} collapsable={false}>
+      <View style={styles.wrapper}>
+        <TouchableNativeFeedback
+          onPress={onPress}
+          background={TouchableNativeFeedback.Ripple('rgba(0,0,0,0.06)', false)}
+        >
+          <View style={styles.card}>
+            <Icon name={icon} size={32} />
+            <Text style={styles.label}>{label}</Text>
+          </View>
+        </TouchableNativeFeedback>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
+  shadowWrapper: {
     width: '100%',
     height: 72,
     borderRadius: radius.lg,
-    overflow: 'hidden',
+    backgroundColor: colors.white,
     ...shadow.card,
+  },
+  wrapper: {
+    flex: 1,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
   },
   card: {
     flex: 1,

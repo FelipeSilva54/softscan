@@ -109,7 +109,7 @@ export function HistoryScreen() {
             sections.map((section) => (
               <View key={section.key} style={styles.group}>
                 <Text style={styles.groupLabel}>{section.title}</Text>
-                <View style={styles.groupItems}>
+                <View style={styles.groupItems} collapsable={false}>
                   {section.records.map((record) => (
                     <CardButtonHorizontal
                       key={record.id}
@@ -158,8 +158,10 @@ const styles = StyleSheet.create({
   listScroll: {
     flex: 1,
     marginTop: spacing.xl,
+    marginHorizontal: -spacing.lg,
   },
   list: {
+    paddingHorizontal: spacing.lg,
     gap: spacing.xl,
     paddingBottom: spacing.xl,
   },

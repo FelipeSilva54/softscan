@@ -24,7 +24,7 @@ export const fontWeight = {
 // Multiplicadores: lineHeight.normal * fontSize.md = height real em px
 export const lineHeight = {
   tight: 1.0,    // 100%
-  normal: 1.2,   // 120%
+  normal: 1.35,  // 135%
   relaxed: 1.5,  // 150%
 } as const;
 

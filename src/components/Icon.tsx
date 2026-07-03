@@ -439,7 +439,7 @@ export function Icon({ name, size = 32, color = colors.primary }: IconProps) {
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <G opacity={0.4}>
+          <G opacity={0.8}>
             <Path
               d="M12.2266 19.7732L19.7732 12.2266"
               stroke={color}
