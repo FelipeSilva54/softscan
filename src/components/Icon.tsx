@@ -13,7 +13,8 @@ export type IconName =
   | 'hand-stars'
   | 'heart'
   | 'menu'
-  | 'flash';
+  | 'flash'
+  | 'save';
 
 interface IconProps {
   name: IconName;
@@ -363,6 +364,43 @@ export function Icon({ name, size = 32, color = colors.primary }: IconProps) {
             strokeLinejoin="round"
             strokeLinecap="round"
           />
+        </Svg>
+      );
+
+    case 'save':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+          <Path
+            d="M21.3332 11.9865V27.1332C21.3332 29.0665 19.9465 29.8799 18.2532 28.9465L13.0132 26.0265C12.4532 25.7199 11.5465 25.7199 10.9865 26.0265L5.7465 28.9465C4.05317 29.8799 2.6665 29.0665 2.6665 27.1332V11.9865C2.6665 9.7065 4.53316 7.83984 6.81316 7.83984H17.1865C19.4665 7.83984 21.3332 9.7065 21.3332 11.9865Z"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Path
+            opacity={0.4}
+            d="M29.3332 6.8134V21.9601C29.3332 23.8934 27.9465 24.7067 26.2532 23.7734L21.3332 21.0267V11.9867C21.3332 9.70673 19.4665 7.84008 17.1865 7.84008H10.6665V6.8134C10.6665 4.5334 12.5332 2.66675 14.8132 2.66675H25.1865C27.4665 2.66675 29.3332 4.5334 29.3332 6.8134Z"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <G opacity={0.4}>
+            <Path
+              d="M9.3335 16H14.6668"
+              stroke={color}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <Path
+              d="M12 18.6666V13.3333"
+              stroke={color}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </G>
         </Svg>
       );
 

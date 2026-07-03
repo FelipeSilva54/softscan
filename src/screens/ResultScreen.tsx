@@ -75,10 +75,16 @@ export function ResultScreen() {
           <View style={styles.data}>
             <Value caption="Conteúdo" value={data.rawValue} />
           </View>
-          <View style={styles.actions}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.actionsScroll}
+            contentContainerStyle={styles.actions}
+          >
             <CardButtonSmall label="Copiar código" icon="copy" onPress={() => copyToClipboard(data.rawValue)} />
             <CardButtonSmall label="Compartilhar" icon="share" onPress={() => shareCode(data.rawValue)} />
-          </View>
+            <CardButtonSmall label="Salvar" icon="save" onPress={() => {}} />
+          </ScrollView>
         </ScrollView>
       </SafeAreaView>
     );
@@ -129,7 +135,12 @@ export function ResultScreen() {
             </>
           )}
         </View>
-        <View style={styles.actions}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.actionsScroll}
+          contentContainerStyle={styles.actions}
+        >
           <CardButtonSmall
             label="Copiar código"
             icon="copy"
@@ -140,7 +151,8 @@ export function ResultScreen() {
             icon="share"
             onPress={() => shareCode(type === 'pix' ? data.rawPayload : data.rawBarcode)}
           />
-        </View>
+          <CardButtonSmall label="Salvar" icon="save" onPress={() => {}} />
+        </ScrollView>
       </ScrollView>
     </SafeAreaView>
   );
@@ -164,10 +176,15 @@ const styles = StyleSheet.create({
     marginTop: 40,
     gap: 28,
   },
+  actionsScroll: {
+    marginTop: 48,
+    marginHorizontal: -spacing.lg,
+  },
   actions: {
     flexDirection: 'row',
-    marginTop: 48,
     gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
   errorContent: {
     flex: 1,

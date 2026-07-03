@@ -19,27 +19,33 @@ interface CardButtonSmallProps {
 
 export function CardButtonSmall({ label, icon, onPress, style }: CardButtonSmallProps) {
   return (
-    <View style={[styles.wrapper, style]}>
-      <TouchableNativeFeedback
-        onPress={onPress}
-        background={TouchableNativeFeedback.Ripple('rgba(0,0,0,0.06)', false)}
-      >
-        <View style={styles.card}>
-          <Icon name={icon} size={40} />
-          <Text style={styles.label}>{label}</Text>
-        </View>
-      </TouchableNativeFeedback>
+    <View style={[styles.shadowWrapper, style]}>
+      <View style={styles.wrapper}>
+        <TouchableNativeFeedback
+          onPress={onPress}
+          background={TouchableNativeFeedback.Ripple('rgba(0,0,0,0.06)', false)}
+        >
+          <View style={styles.card}>
+            <Icon name={icon} size={40} />
+            <Text style={styles.label}>{label}</Text>
+          </View>
+        </TouchableNativeFeedback>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
+  shadowWrapper: {
     width: 137,
     height: 123,
     borderRadius: radius.md,
-    overflow: 'hidden',
     ...shadow.card,
+  },
+  wrapper: {
+    flex: 1,
+    borderRadius: radius.md,
+    overflow: 'hidden',
   },
   card: {
     flex: 1,

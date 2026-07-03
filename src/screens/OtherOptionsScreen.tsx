@@ -26,7 +26,7 @@ export function OtherOptionsScreen() {
             onPress={() => {}}
           />
           <CardButtonHorizontal
-            label="Apoie o Scanow"
+            label="Apoie o SoftScan"
             icon="heart"
             onPress={() => {}}
           />
