@@ -63,7 +63,7 @@ export const textStyles = {
   },
   caption: {
   fontFamily: fontFamily.semibold,
-   fontSize: fontSize.xs,       // 16
+   fontSize: fontSize.xs,       // 14
    lineHeight: fontSize.xs * lineHeight.relaxed,
   },
   input: {

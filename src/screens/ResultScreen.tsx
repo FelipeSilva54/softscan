@@ -1,12 +1,13 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Clipboard from 'expo-clipboard';
-import React from 'react';
+import React, { useState } from 'react';
 import { Platform, ScrollView, Share, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { CardButtonSmall } from '../components/CardButtonSmall';
 import { Header } from '../components/Header';
+import { SaveResultSheet } from '../components/SaveResultSheet';
 import { Value } from '../components/Value';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { colors, spacing, textStyles } from '../theme';
@@ -65,6 +66,11 @@ export function ResultScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Result'>>();
   const { type, data } = route.params;
+  const [isSaveSheetVisible, setSaveSheetVisible] = useState(false);
+
+  function handleSaveResult(name: string) {
+    // TODO: persistir no histórico local (src/storage/historyStorage.ts) quando implementado
+  }
 
   if (type === 'generic') {
     return (
@@ -83,9 +89,14 @@ export function ResultScreen() {
           >
             <CardButtonSmall label="Copiar código" icon="copy" onPress={() => copyToClipboard(data.rawValue)} />
             <CardButtonSmall label="Compartilhar" icon="share" onPress={() => shareCode(data.rawValue)} />
-            <CardButtonSmall label="Salvar" icon="save" onPress={() => {}} />
+            <CardButtonSmall label="Salvar" icon="save" onPress={() => setSaveSheetVisible(true)} />
           </ScrollView>
         </ScrollView>
+        <SaveResultSheet
+          visible={isSaveSheetVisible}
+          onClose={() => setSaveSheetVisible(false)}
+          onSave={handleSaveResult}
+        />
       </SafeAreaView>
     );
   }
@@ -151,9 +162,15 @@ export function ResultScreen() {
             icon="share"
             onPress={() => shareCode(type === 'pix' ? data.rawPayload : data.rawBarcode)}
           />
-          <CardButtonSmall label="Salvar" icon="save" onPress={() => {}} />
+          <CardButtonSmall label="Salvar" icon="save" onPress={() => setSaveSheetVisible(true)} />
         </ScrollView>
       </ScrollView>
+      <SaveResultSheet
+        visible={isSaveSheetVisible}
+        onClose={() => setSaveSheetVisible(false)}
+        onSave={handleSaveResult}
+        placeholder={type === 'pix' ? 'Ex: Pix da Sofia' : 'Ex: Boleto da Enel'}
+      />
     </SafeAreaView>
   );
 }

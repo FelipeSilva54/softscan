@@ -7,4 +7,6 @@ export const colors = {
   white: '#FFFFFF',
   input: '#BEC6D0',
   error: '#D64545',
+  border: '#DDE6E9',
+  overlay: 'rgba(2, 39, 67, 0.45)',
 } as const;

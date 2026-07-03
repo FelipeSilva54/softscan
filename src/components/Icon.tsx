@@ -14,7 +14,9 @@ export type IconName =
   | 'heart'
   | 'menu'
   | 'flash'
-  | 'save';
+  | 'save'
+  | 'search'
+  | 'close';
 
 interface IconProps {
   name: IconName;
@@ -395,6 +397,56 @@ export function Icon({ name, size = 32, color = colors.primary }: IconProps) {
             />
             <Path
               d="M12 18.6666V13.3333"
+              stroke={color}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </G>
+        </Svg>
+      );
+
+    case 'search':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Path
+            d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Path
+            d="M22 22L20 20"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity={0.4}
+          />
+        </Svg>
+      );
+
+    case 'close':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+          <Path
+            d="M15.9998 29.3332C23.3332 29.3332 29.3332 23.3332 29.3332 15.9998C29.3332 8.6665 23.3332 2.6665 15.9998 2.6665C8.6665 2.6665 2.6665 8.6665 2.6665 15.9998C2.6665 23.3332 8.6665 29.3332 15.9998 29.3332Z"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <G opacity={0.4}>
+            <Path
+              d="M12.2266 19.7732L19.7732 12.2266"
+              stroke={color}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <Path
+              d="M19.7732 19.7732L12.2266 12.2266"
               stroke={color}
               strokeWidth={2}
               strokeLinecap="round"
