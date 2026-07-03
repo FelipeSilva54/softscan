@@ -30,6 +30,8 @@ interface SaveResultSheetProps {
   onSave: (name: string) => void;
   initialName?: string;
   placeholder?: string;
+  title?: string;
+  buttonLabel?: string;
 }
 
 export function SaveResultSheet({
@@ -38,6 +40,8 @@ export function SaveResultSheet({
   onSave,
   initialName = '',
   placeholder = 'Ex: Pix da Sofia',
+  title = 'Digite um nome',
+  buttonLabel = 'Salvar resultado',
 }: SaveResultSheetProps) {
   const insets = useSafeAreaInsets();
   const [name, setName] = useState(initialName);
@@ -166,11 +170,11 @@ export function SaveResultSheet({
           >
             <View {...panResponder.panHandlers} collapsable={false} style={styles.dragArea}>
               <View style={styles.handle} />
-              <Text style={styles.title}>Digite um nome</Text>
+              <Text style={styles.title}>{title}</Text>
             </View>
             <View style={styles.content}>
               <Input value={name} onChangeText={setName} placeholder={placeholder} autoCapitalize="sentences" />
-              <Button label="Salvar resultado" onPress={handleSave} disabled={!name.trim()} />
+              <Button label={buttonLabel} onPress={handleSave} disabled={!name.trim()} />
             </View>
           </Animated.View>
         </KeyboardAvoidingView>

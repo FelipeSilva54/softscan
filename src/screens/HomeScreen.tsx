@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppLogo } from '../components/AppLogo';
@@ -14,11 +14,13 @@ export function HomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [userName, setUserName] = useState<string | null>(null);
 
-  useEffect(() => {
-    getUserName().then(setUserName);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getUserName().then(setUserName);
+    }, [])
+  );
 
-  const greeting = userName ? `Olá ${userName}!` : 'Olá!';
+  const greeting = userName ? `Olá, ${userName}!` : 'Olá!';
 
   return (
     <SafeAreaView style={styles.safe}>
