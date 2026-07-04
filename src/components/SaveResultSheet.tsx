@@ -1,28 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Easing,
-  Keyboard,
-  KeyboardAvoidingView,
-  Modal,
-  PanResponder,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, radius, spacing, textStyles } from '../theme';
+import { BottomSheet, BottomSheetHandle } from './BottomSheet';
 import { Button } from './Button';
 import { Input } from './Input';
-
-const SCREEN_HEIGHT = Dimensions.get('window').height;
-const OPEN_DURATION = 280;
-const CLOSE_DURATION = 220;
-const DISMISS_DISTANCE = 120;
-const DISMISS_VELOCITY = 1.2;
 
 interface SaveResultSheetProps {
   visible: boolean;
@@ -43,182 +22,27 @@ export function SaveResultSheet({
   title = 'Digite um nome',
   buttonLabel = 'Salvar resultado',
 }: SaveResultSheetProps) {
-  const insets = useSafeAreaInsets();
   const [name, setName] = useState(initialName);
-  const [isMounted, setIsMounted] = useState(visible);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-  const backdropOpacity = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-    const showSub = Keyboard.addListener(showEvent, () => setIsKeyboardVisible(true));
-    const hideSub = Keyboard.addListener(hideEvent, () => setIsKeyboardVisible(false));
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
+  const sheetRef = useRef<BottomSheetHandle>(null);
 
   useEffect(() => {
     if (visible) {
-      setIsMounted(true);
       setName(initialName);
-      translateY.setValue(SCREEN_HEIGHT);
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: 0,
-          duration: OPEN_DURATION,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(backdropOpacity, {
-          toValue: 1,
-          duration: OPEN_DURATION,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-      ]).start();
     }
-  }, [visible]);
-
-  function animateClose(after?: () => void) {
-    Keyboard.dismiss();
-    Animated.parallel([
-      Animated.timing(translateY, {
-        toValue: SCREEN_HEIGHT,
-        duration: CLOSE_DURATION,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(backdropOpacity, {
-        toValue: 0,
-        duration: CLOSE_DURATION,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setIsMounted(false);
-      setName('');
-      after?.();
-    });
-  }
-
-  function handleDismiss() {
-    animateClose(onClose);
-  }
+  }, [visible, initialName]);
 
   function handleSave() {
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
     onSave(trimmedName);
-    animateClose(onClose);
+    sheetRef.current?.dismiss();
   }
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onStartShouldSetPanResponderCapture: () => false,
-      onMoveShouldSetPanResponder: (_, gesture) =>
-        Math.abs(gesture.dy) > 2 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
-      onMoveShouldSetPanResponderCapture: (_, gesture) =>
-        Math.abs(gesture.dy) > 2 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
-      onPanResponderTerminationRequest: () => false,
-      onShouldBlockNativeResponder: () => true,
-      onPanResponderMove: (_, gesture) => {
-        if (gesture.dy > 0) {
-          translateY.setValue(gesture.dy);
-        }
-      },
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dy > DISMISS_DISTANCE || gesture.vy > DISMISS_VELOCITY) {
-          handleDismiss();
-        } else {
-          Animated.spring(translateY, {
-            toValue: 0,
-            useNativeDriver: true,
-            bounciness: 4,
-          }).start();
-        }
-      },
-    })
-  ).current;
-
-  if (!isMounted) return null;
-
   return (
-    <Modal visible transparent statusBarTranslucent animationType="none" onRequestClose={handleDismiss}>
-      <View style={styles.root}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={handleDismiss}>
-          <Animated.View style={[StyleSheet.absoluteFill, styles.backdrop, { opacity: backdropOpacity }]} />
-        </Pressable>
-        <KeyboardAvoidingView
-          style={styles.keyboardWrapper}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          pointerEvents="box-none"
-        >
-          <Animated.View
-            style={[
-              styles.sheet,
-              {
-                paddingBottom: isKeyboardVisible ? spacing.lg : insets.bottom + spacing.xl,
-                transform: [{ translateY }],
-              },
-            ]}
-          >
-            <View {...panResponder.panHandlers} collapsable={false} style={styles.dragArea}>
-              <View style={styles.handle} />
-              <Text style={styles.title}>{title}</Text>
-            </View>
-            <View style={styles.content}>
-              <Input value={name} onChangeText={setName} placeholder={placeholder} autoCapitalize="sentences" />
-              <Button label={buttonLabel} onPress={handleSave} disabled={!name.trim()} />
-            </View>
-          </Animated.View>
-        </KeyboardAvoidingView>
-      </View>
-    </Modal>
+    <BottomSheet ref={sheetRef} visible={visible} onClose={onClose} title={title}>
+      <Input value={name} onChangeText={setName} placeholder={placeholder} autoCapitalize="sentences" />
+      <Button label={buttonLabel} onPress={handleSave} disabled={!name.trim()} />
+    </BottomSheet>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
-  backdrop: {
-    backgroundColor: colors.overlay,
-  },
-  keyboardWrapper: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  sheet: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: radius.xl,
-    borderTopRightRadius: radius.xl,
-  },
-  dragArea: {
-    alignItems: 'center',
-    paddingTop: spacing.sm,
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    borderRadius: radius.full,
-    backgroundColor: colors.border,
-  },
-  content: {
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.md,
-    gap: spacing.xxl,
-  },
-  title: {
-    ...textStyles.subheading,
-    color: colors.secondary,
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.lg,
-    alignSelf: 'flex-start',
-  },
-});

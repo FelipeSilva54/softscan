@@ -4,9 +4,9 @@ import * as Clipboard from 'expo-clipboard';
 import React, { useState } from 'react';
 import { Alert, Platform, ScrollView, Share, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../components/Button';
 import { CardButtonSmall } from '../components/CardButtonSmall';
 import { Header } from '../components/Header';
+import { InvalidCodeSheet } from '../components/InvalidCodeSheet';
 import { SaveResultSheet } from '../components/SaveResultSheet';
 import { Value } from '../components/Value';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -159,13 +159,11 @@ export function ResultScreen() {
     return (
       <SafeAreaView style={styles.safe}>
         <Header onBackPress={() => navigation.popToTop()} />
-        <View style={styles.errorContent}>
-          <Text style={styles.errorTitle}>Código inválido</Text>
-          <Text style={styles.errorBody}>
-            Não conseguimos confirmar que este código é válido. Tente escanear novamente.
-          </Text>
-          <Button label="Escanear novamente" onPress={() => navigation.replace('Scanner', { mode: type })} />
-        </View>
+        <InvalidCodeSheet
+          visible
+          onClose={() => navigation.popToTop()}
+          onRescan={() => navigation.replace('Scanner', { mode: type })}
+        />
       </SafeAreaView>
     );
   }
@@ -264,21 +262,6 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-  },
-  errorContent: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  errorTitle: {
-    ...textStyles.title,
-    color: colors.error,
-  },
-  errorBody: {
-    ...textStyles.body,
-    color: colors.gray,
-    marginBottom: spacing.md,
   },
   notice: {
     ...textStyles.body,
