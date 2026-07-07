@@ -55,13 +55,7 @@ export function OtherOptionsScreen() {
           <CardButtonHorizontal
             label="Apoie o SoftScan"
             icon="heart"
-            // Atalho temporário para revisar a tela de código inválido sem precisar escanear um.
-            onPress={() =>
-              navigation.navigate('Result', {
-                type: 'pix',
-                data: { isValid: false, isRecognized: true, rawPayload: '' },
-              })
-            }
+            onPress={() => navigation.navigate('Donate')}
           />
           <CardButtonHorizontal
             label="Avalie o aplicativo"

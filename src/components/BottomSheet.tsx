@@ -58,22 +58,26 @@ export const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(funct
     if (visible) {
       setIsMounted(true);
       translateY.setValue(SCREEN_HEIGHT);
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: 0,
-          duration: OPEN_DURATION,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(backdropOpacity, {
-          toValue: 1,
-          duration: OPEN_DURATION,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-      ]).start();
+      backdropOpacity.setValue(0);
     }
   }, [visible]);
+
+  function animateOpen() {
+    Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: OPEN_DURATION,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 1,
+        duration: OPEN_DURATION,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }
 
   function animateClose(after?: () => void) {
     Keyboard.dismiss();
@@ -134,7 +138,14 @@ export const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(funct
   if (!isMounted) return null;
 
   return (
-    <Modal visible transparent statusBarTranslucent animationType="none" onRequestClose={handleDismiss}>
+    <Modal
+      visible
+      transparent
+      statusBarTranslucent
+      animationType="none"
+      onRequestClose={handleDismiss}
+      onShow={animateOpen}
+    >
       <View style={styles.root}>
         <Pressable style={StyleSheet.absoluteFill} onPress={handleDismiss}>
           <Animated.View style={[StyleSheet.absoluteFill, styles.backdrop, { opacity: backdropOpacity }]} />
