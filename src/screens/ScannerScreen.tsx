@@ -17,17 +17,26 @@ import { parseBoletoBarcode } from '../parsers/boletoParser';
 import { parsePixPayload } from '../parsers/pixParser';
 import { colors, spacing, textStyles } from '../theme';
 
-// Todo boleto brasileiro — cobrança bancária ou convênio/arrecadação (água, luz,
-// telefone/internet etc), sem exceção — usa uma única simbologia definida pelo
-// padrão FEBRABAN: Intercalado 2 de 5 (ITF), sempre 44 dígitos. Não existe boleto
-// em code128/ean/upc/pdf417/datamatrix/aztec: esses são formatos de varejo/logística.
-// Habilitar todos eles ao mesmo tempo fazia o ML Kit testar 12 decodificadores por
-// frame (câmera muito mais lenta) e ainda causava leituras erradas: um padrão de
-// barras borrado/parcial do próprio boleto (ou de outro elemento impresso na conta)
-// podia bater por engano com um formato curto como EAN-8/UPC-E/CODE39 antes do
-// código real ser lido corretamente. Restringir a ITF-14 resolve os dois problemas
-// sem perder nenhum tipo de boleto.
-const NON_QR_BARCODE_TYPES: BarcodeType[] = ['itf14'];
+// O scanner de código de barras lê QUALQUER simbologia — o usuário só abre e
+// aponta, sem escolher nada. Mas boleto é a prioridade e não pode ficar lento:
+// por isso o tratamento é esperto (ver handleBarcodeScanned). Boleto brasileiro,
+// de qualquer natureza (cobrança ou convênio/arrecadação), é sempre ITF ('itf14')
+// de 44 dígitos — o que permite separá-lo dos demais formatos com segurança.
+const BARCODE_TYPES: BarcodeType[] = [
+  'itf14',
+  'ean13',
+  'ean8',
+  'upc_a',
+  'upc_e',
+  'code39',
+  'code93',
+  'code128',
+  'codabar',
+  'qr',
+  'pdf417',
+  'datamatrix',
+  'aztec',
+];
 
 export function ScannerScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -65,36 +74,69 @@ export function ScannerScreen() {
       return;
     }
 
-    // O ITF (código de barras de boleto) não carrega verificação de comprimento
-    // na própria simbologia, então o leitor às vezes decodifica só um PEDAÇO das
-    // barras e devolve uma leitura parcial (ex: "848" seguido de lixo, com menos
-    // de 44 dígitos). Todo boleto tem exatamente 44 dígitos: descartamos
-    // silenciosamente qualquer leitura fora disso e seguimos escaneando.
-    if (data.replace(/\D/g, '').length !== 44) return;
+    // --- Scanner de código de barras: lê tudo, mas PRIORIZA boleto ---
+    // A prioridade é resolvida pela simbologia, não por um modo que o usuário
+    // escolhe: boleto é sempre ITF ('itf14'), então todo ITF vai pro caminho do
+    // boleto (validado por checksum) e qualquer outro formato é tratado como
+    // código genérico. Assim o boleto é aceito na hora, sem os formatos de
+    // varejo atrapalharem, e mesmo assim o app lê produto/QR/etc.
+    if (type === 'itf14') {
+      // ITF não tem verificação de comprimento embutida, então o leitor às vezes
+      // devolve um PEDAÇO das barras (ex: "848..." truncado). Todo boleto tem 44
+      // dígitos: descartamos leitura parcial e seguimos escaneando.
+      if (data.replace(/\D/g, '').length !== 44) return;
 
-    const boleto = parseBoletoBarcode(data);
+      const boleto = parseBoletoBarcode(data);
 
-    // Checksum válido = aceita na PRIMEIRA leitura boa. O dígito verificador
-    // (módulo 10/11) detecta 100% dos erros de um dígito, então um código
-    // corrompido não chega aqui — não precisamos esperar a leitura repetir em
-    // frames seguintes (o que era a maior causa de "demora pra escanear").
-    if (boleto.isValid) {
+      // Checksum válido = aceita na PRIMEIRA leitura boa. O dígito verificador
+      // (módulo 10/11) detecta 100% dos erros de um dígito, então um código
+      // corrompido não chega aqui — não precisamos esperar a leitura repetir.
+      if (boleto.isValid) {
+        setScanned(true);
+        navigation.replace('Result', { type: 'boleto', data: boleto });
+        return;
+      }
+
+      // Reconhecido como boleto mas o checksum não bateu. Pode ser um misread
+      // pontual (uma barra borrada em UM frame). Só acusamos "inválido" depois de
+      // ver o MESMO código falhar duas vezes — se no próximo frame o leitor
+      // acertar, o ramo de cima aceita e o aviso nem aparece.
+      const pending = pendingScanRef.current;
+      const count = pending?.data === data ? pending.count + 1 : 1;
+      pendingScanRef.current = { data, count };
+      if (count < 2) return;
+
       setScanned(true);
-      navigation.replace('Result', { type: 'boleto', data: boleto });
+      setInvalidVisible(true);
       return;
     }
 
-    // Reconhecido como boleto mas o checksum não bateu. Pode ser um misread
-    // pontual de um boleto válido (uma barra borrada em UM frame). Só acusamos
-    // "inválido" depois de ver o MESMO código falhar duas vezes seguidas — se no
-    // próximo frame o leitor acertar, o ramo de cima aceita e o aviso nem aparece.
+    // QR pode carregar um Pix: se for, parseia e mostra bonitinho; senão, cai no
+    // genérico (URL, texto, wi-fi etc). QR tem correção de erro, aceita direto.
+    if (type === 'qr') {
+      const pix = parsePixPayload(data);
+      setScanned(true);
+      if (pix.isRecognized && !pix.isValid) {
+        setInvalidVisible(true);
+      } else if (pix.isRecognized) {
+        navigation.replace('Result', { type: 'pix', data: pix });
+      } else {
+        navigation.replace('Result', { type: 'generic', data: { rawValue: data, barcodeType: type } });
+      }
+      return;
+    }
+
+    // Demais formatos (produto: EAN/UPC, Code128/39/93, Codabar, PDF417...).
+    // São 1D/2D sem checksum que a gente valide, então exigimos ver a MESMA
+    // leitura repetir uma vez antes de aceitar — descarta um dígito trocado
+    // pontual, mas continua praticamente instantâneo pra um código nítido.
     const pending = pendingScanRef.current;
     const count = pending?.data === data ? pending.count + 1 : 1;
     pendingScanRef.current = { data, count };
     if (count < 2) return;
 
     setScanned(true);
-    setInvalidVisible(true);
+    navigation.replace('Result', { type: 'generic', data: { rawValue: data, barcodeType: type } });
   }
 
   // Código reconhecido como Pix/boleto mas com checksum inválido: a pessoa já
@@ -153,7 +195,7 @@ export function ScannerScreen() {
         // .continuousAutoFocus). Ver expo-camera/ios/Current/CameraEnums.swift.
         autofocus="off"
         enableTorch={torchOn}
-        barcodeScannerSettings={{ barcodeTypes: mode === 'pix' ? ['qr'] : NON_QR_BARCODE_TYPES }}
+        barcodeScannerSettings={{ barcodeTypes: mode === 'pix' ? ['qr'] : BARCODE_TYPES }}
         onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
       />
 
