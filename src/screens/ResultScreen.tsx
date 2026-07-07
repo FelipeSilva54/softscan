@@ -203,10 +203,20 @@ export function ResultScreen() {
           ) : (
             <>
               <Value caption="Valor" value={formatCurrency(data.amount)} />
-              <Value caption="Vencimento" value={formatDate(data.dueDate)} />
-              <Value caption="Instituição" value={data.bankName ?? `Banco ${data.bankCode ?? ''}`} />
-              <Value caption="Linha digitável" value={data.linhaDigitavel ?? data.rawBarcode} />
-              <Value caption="Código de barras" value={data.rawBarcode} />
+              {/* Convênio/arrecadação (conta de consumo) não carrega banco nem
+                  vencimento em posição padrão — mostramos o segmento no lugar.
+                  Cobrança bancária tem os dois. */}
+              {data.format === 'convenio' ? (
+                <Value caption="Segmento" value={data.segment ?? 'Arrecadação'} />
+              ) : (
+                <>
+                  <Value caption="Vencimento" value={formatDate(data.dueDate)} />
+                  <Value caption="Instituição" value={data.bankName ?? `Banco ${data.bankCode ?? ''}`} />
+                </>
+              )}
+              {/* Quem escaneia boleto só quer o código pra pagar: um campo só,
+                  já com a linha digitável (o que o banco aceita ao colar). */}
+              <Value caption="Código do boleto" value={data.linhaDigitavel ?? data.rawBarcode} />
             </>
           )}
         </View>

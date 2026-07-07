@@ -47,57 +47,54 @@ export function ScannerScreen() {
   const screenTitle = mode === 'pix' ? 'Escaneie o QR Code' : 'Escaneie o código de barras';
   const instruction = mode === 'pix' ? 'Aponte a câmera para o QR Code' : 'Aponte a câmera para o código de barras';
 
-  // Código de barras 1D (boleto e afins) não tem correção de erro embutida como
-  // o QR Code: uma única leitura com desfoque pode decodificar um dígito errado.
-  // Só aceitamos a leitura depois de vê-la repetir em frames consecutivos, o que
-  // descarta a maior parte dos falsos "inválido".
-  const CONFIRMATIONS_NEEDED = mode === 'pix' ? 1 : 2;
-
   function handleBarcodeScanned({ data, type }: BarcodeScanningResult) {
     if (scanned) return;
 
-    // O ITF (código de barras de boleto) não carrega verificação de comprimento
-    // na própria simbologia, então o leitor às vezes decodifica só um PEDAÇO das
-    // barras e devolve uma leitura parcial (ex: "848" seguido de lixo, com menos
-    // de 44 dígitos) — que aparecia como "código estranho" na tela. Todo boleto
-    // tem exatamente 44 dígitos: descartamos silenciosamente qualquer leitura
-    // fora disso e seguimos escaneando, em vez de aceitar a leitura corrompida.
-    if (mode !== 'pix' && data.replace(/\D/g, '').length !== 44) {
-      pendingScanRef.current = null;
-      return;
-    }
-
-    const pending = pendingScanRef.current;
-    const count = pending?.data === data ? pending.count + 1 : 1;
-    pendingScanRef.current = { data, count };
-
-    if (count < CONFIRMATIONS_NEEDED) return;
-
-    setScanned(true);
-
+    // O QR Code tem correção de erro embutida: se decodificou, os dados estão
+    // íntegros. Aceita de imediato (o CRC16 do Pix ainda valida o conteúdo).
     if (mode === 'pix') {
+      setScanned(true);
       const pix = parsePixPayload(data);
       if (pix.isRecognized && !pix.isValid) {
         setInvalidVisible(true);
-        return;
-      }
-      if (pix.isRecognized) {
+      } else if (pix.isRecognized) {
         navigation.replace('Result', { type: 'pix', data: pix });
       } else {
         navigation.replace('Result', { type: 'generic', data: { rawValue: data, barcodeType: type } });
       }
-    } else {
-      const boleto = parseBoletoBarcode(data);
-      if (boleto.isRecognized && !boleto.isValid) {
-        setInvalidVisible(true);
-        return;
-      }
-      if (boleto.isRecognized) {
-        navigation.replace('Result', { type: 'boleto', data: boleto });
-      } else {
-        navigation.replace('Result', { type: 'generic', data: { rawValue: data, barcodeType: type } });
-      }
+      return;
     }
+
+    // O ITF (código de barras de boleto) não carrega verificação de comprimento
+    // na própria simbologia, então o leitor às vezes decodifica só um PEDAÇO das
+    // barras e devolve uma leitura parcial (ex: "848" seguido de lixo, com menos
+    // de 44 dígitos). Todo boleto tem exatamente 44 dígitos: descartamos
+    // silenciosamente qualquer leitura fora disso e seguimos escaneando.
+    if (data.replace(/\D/g, '').length !== 44) return;
+
+    const boleto = parseBoletoBarcode(data);
+
+    // Checksum válido = aceita na PRIMEIRA leitura boa. O dígito verificador
+    // (módulo 10/11) detecta 100% dos erros de um dígito, então um código
+    // corrompido não chega aqui — não precisamos esperar a leitura repetir em
+    // frames seguintes (o que era a maior causa de "demora pra escanear").
+    if (boleto.isValid) {
+      setScanned(true);
+      navigation.replace('Result', { type: 'boleto', data: boleto });
+      return;
+    }
+
+    // Reconhecido como boleto mas o checksum não bateu. Pode ser um misread
+    // pontual de um boleto válido (uma barra borrada em UM frame). Só acusamos
+    // "inválido" depois de ver o MESMO código falhar duas vezes seguidas — se no
+    // próximo frame o leitor acertar, o ramo de cima aceita e o aviso nem aparece.
+    const pending = pendingScanRef.current;
+    const count = pending?.data === data ? pending.count + 1 : 1;
+    pendingScanRef.current = { data, count };
+    if (count < 2) return;
+
+    setScanned(true);
+    setInvalidVisible(true);
   }
 
   // Código reconhecido como Pix/boleto mas com checksum inválido: a pessoa já

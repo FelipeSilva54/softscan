@@ -3,6 +3,20 @@ import { calculateModulo11, calculateModulo11Convenio } from '../validators/modu
 import { BoletoData } from '../types/boleto.types';
 import { BANK_NAMES } from './bankCodes';
 
+// Segmento de arrecadação, identificado pela 2ª posição do código de barras de
+// convênio (a 1ª é sempre '8'). Convênio não tem código de banco — o segmento é
+// o que dá contexto de "quem está cobrando". Fonte: Manual FEBRABAN de Arrecadação.
+const SEGMENT_NAMES: Record<string, string> = {
+  '1': 'Prefeitura',
+  '2': 'Saneamento',
+  '3': 'Energia elétrica e gás',
+  '4': 'Telecomunicações',
+  '5': 'Órgão governamental',
+  '6': 'Carnês e assemelhados',
+  '7': 'Multas de trânsito',
+  '9': 'Outros',
+};
+
 // Fator de vencimento reiniciou em 1000 a partir de 22/02/2025 (nova regra FEBRABAN).
 // Como todo boleto em circulação hoje foi emitido depois disso, assumimos sempre esse ciclo.
 const FATOR_BASE = 1000;
@@ -99,6 +113,7 @@ function parseConvenio(barcode: string): BoletoData {
     rawBarcode: barcode,
     linhaDigitavel: gerarLinhaDigitavelConvenio(barcode, useModulo10),
     format: 'convenio',
+    segment: SEGMENT_NAMES[barcode[1]] ?? 'Arrecadação',
     amount: valorCentavos > 0 ? valorCentavos / 100 : undefined,
     freeField,
   };

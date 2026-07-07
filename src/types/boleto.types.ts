@@ -14,6 +14,10 @@ export interface BoletoData {
   format: BoletoFormat;
   bankCode?: string;
   bankName?: string;
+  // Segmento de arrecadação (só convênio): identifica o tipo de conta pela 2ª
+  // posição do código — energia, telecom, saneamento etc. É o equivalente do
+  // "banco" para convênio, que não carrega código de instituição.
+  segment?: string;
   currencyCode?: string;
   amount?: number;
   dueDate?: Date;
