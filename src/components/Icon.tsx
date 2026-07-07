@@ -18,7 +18,8 @@ export type IconName =
   | 'search'
   | 'close'
   | 'edit'
-  | 'save-remove';
+  | 'save-remove'
+  | 'open-link';
 
 interface IconProps {
   name: IconName;
@@ -521,6 +522,26 @@ export function Icon({ name, size = 32, color = colors.primary }: IconProps) {
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
+          />
+        </Svg>
+      );
+
+    case 'open-link':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+          <Path
+            d="M17.3333 14.6667L29.3333 2.66675M29.3333 9.79175V2.66675H22.2082"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Path
+            opacity={0.5}
+            d="M29.3334 16.0001C29.3334 22.2854 29.3334 25.4282 27.3807 27.3807C25.4282 29.3334 22.2854 29.3334 16.0001 29.3334C9.71468 29.3334 6.57199 29.3334 4.61937 27.3807C2.66675 25.4282 2.66675 22.2854 2.66675 16.0001C2.66675 9.71468 2.66675 6.57199 4.61937 4.61937C6.57199 2.66675 9.71468 2.66675 16.0001 2.66675"
+            stroke={color}
+            strokeWidth={2}
+            strokeLinecap="round"
           />
         </Svg>
       );

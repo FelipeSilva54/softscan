@@ -2,7 +2,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Clipboard from 'expo-clipboard';
 import React, { useState } from 'react';
-import { Alert, Platform, ScrollView, Share, StyleSheet, Text, ToastAndroid, View } from 'react-native';
+import { Alert, Linking, Platform, ScrollView, Share, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CardButtonSmall } from '../components/CardButtonSmall';
 import { Header } from '../components/Header';
@@ -10,6 +10,7 @@ import { InvalidCodeSheet } from '../components/InvalidCodeSheet';
 import { SaveResultSheet } from '../components/SaveResultSheet';
 import { Value } from '../components/Value';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { isWebLink } from '../parsers/linkParser';
 import { removeScan, saveScan, updateScanName } from '../storage/historyStorage';
 import { colors, spacing, textStyles } from '../theme';
 
@@ -114,6 +115,8 @@ export function ResultScreen() {
   }
 
   if (type === 'generic') {
+    const isLink = isWebLink(data.rawValue);
+
     return (
       <SafeAreaView style={styles.safe}>
         <Header onBackPress={() => navigation.popToTop()} />
@@ -128,7 +131,15 @@ export function ResultScreen() {
             style={styles.actionsScroll}
             contentContainerStyle={styles.actions}
           >
-            <CardButtonSmall label="Copiar código" icon="copy" onPress={() => copyToClipboard(data.rawValue)} />
+            {isLink ? (
+              <CardButtonSmall
+                label="Abrir link"
+                icon="open-link"
+                onPress={() => Linking.openURL(data.rawValue)}
+              />
+            ) : (
+              <CardButtonSmall label="Copiar código" icon="copy" onPress={() => copyToClipboard(data.rawValue)} />
+            )}
             <CardButtonSmall label="Compartilhar" icon="share" onPress={() => shareCode(data.rawValue)} />
             {isSaved ? (
               <>
