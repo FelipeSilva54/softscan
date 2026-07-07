@@ -29,7 +29,7 @@ export function HomeScreen() {
           <AppLogo size={40} />
           <Text style={styles.headingPrimary}>{greeting}</Text>
           <Text style={styles.headingSecondary}>O que deseja escanear?</Text>
-          <Text style={styles.subtitle}>Clique nos cards abaixo para usar os serviços</Text>
+          <Text style={styles.subtitle}>Clique nos cards abaixo para usar os serviços.</Text>
         </View>
         <View style={styles.row}>
           <CardButton
