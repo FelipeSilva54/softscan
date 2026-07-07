@@ -9,6 +9,7 @@ import { Defs, Mask, Rect, Svg } from 'react-native-svg';
 import { FRAME_RADIUS, getFrameSize, ScannerFrame } from '../components/ScannerFrame';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
+import { InvalidCodeSheet } from '../components/InvalidCodeSheet';
 import { BackIcon } from '../icons/BackIcon';
 import { CameraIllustration } from '../icons/CameraIllustration';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -38,6 +39,7 @@ export function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [torchOn, setTorchOn] = useState(false);
   const [scanned, setScanned] = useState(false);
+  const [invalidVisible, setInvalidVisible] = useState(false);
   const pendingScanRef = useRef<{ data: string; count: number } | null>(null);
 
   const shape = mode === 'pix' ? 'square' : 'rectangle';
@@ -64,6 +66,10 @@ export function ScannerScreen() {
 
     if (mode === 'pix') {
       const pix = parsePixPayload(data);
+      if (pix.isRecognized && !pix.isValid) {
+        setInvalidVisible(true);
+        return;
+      }
       if (pix.isRecognized) {
         navigation.replace('Result', { type: 'pix', data: pix });
       } else {
@@ -71,12 +77,26 @@ export function ScannerScreen() {
       }
     } else {
       const boleto = parseBoletoBarcode(data);
+      if (boleto.isRecognized && !boleto.isValid) {
+        setInvalidVisible(true);
+        return;
+      }
       if (boleto.isRecognized) {
         navigation.replace('Result', { type: 'boleto', data: boleto });
       } else {
         navigation.replace('Result', { type: 'generic', data: { rawValue: data, barcodeType: type } });
       }
     }
+  }
+
+  // Código reconhecido como Pix/boleto mas com checksum inválido: a pessoa já
+  // está na tela do Scanner tentando ler o código, então o aviso aparece aqui
+  // mesmo (sem navegar pra Result) e "escanear novamente" só reabre a câmera
+  // no lugar, sem trocar de tela.
+  function handleRescan() {
+    pendingScanRef.current = null;
+    setInvalidVisible(false);
+    setScanned(false);
   }
 
   if (!permission) {
@@ -183,6 +203,8 @@ export function ScannerScreen() {
           </View>
         </View>
       </SafeAreaView>
+
+      <InvalidCodeSheet visible={invalidVisible} onClose={() => navigation.goBack()} onRescan={handleRescan} />
     </View>
   );
 }

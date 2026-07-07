@@ -78,7 +78,11 @@ function parseCobranca(barcode: string): BoletoData {
 }
 
 function parseConvenio(barcode: string): BoletoData {
-  const useModulo10 = barcode[2] === '6' || barcode[2] === '8';
+  // Identificador de valor/moeda (posição 3 do código de barras): 6 ou 7 usam
+  // módulo 10; 8 ou 9 usam módulo 11. Confirmado batendo os 4 DVs de bloco +
+  // o DV geral de um boleto de convênio real contra as duas fórmulas — os 5
+  // batiam com módulo 11 pro identificador '8', nenhum batia com módulo 10.
+  const useModulo10 = barcode[2] === '6' || barcode[2] === '7';
   const digitsWithoutDV = barcode.substring(0, 3) + barcode.substring(4);
   const dv = parseInt(barcode[3], 10);
 
