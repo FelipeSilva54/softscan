@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Política de Privacidade — SoftScan</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1a1f24;
+    --muted: #5b6572;
+    --accent: #1f6feb;
+    --card: #f5f7f8;
+    --border: #e2e6ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9aa5b1;
+      --accent: #58a6ff;
+      --card: #161b22;
+      --border: #262c34;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+  header {
+    margin-bottom: 32px;
+  }
+  h1 {
+    font-size: 1.75rem;
+    margin: 0 0 8px;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  h2 {
+    font-size: 1.15rem;
+    margin-top: 2.2em;
+    margin-bottom: 0.6em;
+  }
+  p, li {
+    font-size: 0.98rem;
+  }
+  ul {
+    padding-left: 1.3em;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 1.2em 0;
+  }
+  .card p:first-child { margin-top: 0; }
+  .card p:last-child { margin-bottom: 0; }
+  a { color: var(--accent); }
+  code {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.9em;
+  }
+  footer {
+    margin-top: 3em;
+    padding-top: 1.2em;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Política de Privacidade do SoftScan</h1>
+      <p class="meta">Última atualização: 7 de julho de 2026</p>
+    </header>
+
+    <div class="card">
+      <p><strong>Resumo:</strong> o SoftScan não tem login, não tem servidor próprio e não envia
+      seus dados para nenhum lugar. Tudo o que o app lê ou guarda fica somente no seu
+      aparelho.</p>
+    </div>
+
+    <h2>1. Quem somos</h2>
+    <p>
+      O SoftScan é um aplicativo gratuito para Android que lê QR Code Pix e código de barras de
+      boleto bancário, exibe os dados extraídos (valor, vencimento, beneficiário, etc.) e permite
+      copiar ou compartilhar essas informações. Esta política explica como o app trata dados ao
+      ser usado.
+    </p>
+
+    <h2>2. Quais dados o app acessa</h2>
+    <ul>
+      <li>
+        <strong>Câmera:</strong> usada exclusivamente para ler o QR Code ou código de barras na
+        tela do scanner, em tempo real. O SoftScan não grava, não salva e não transmite imagens
+        ou vídeo da câmera para nenhum servidor. Nenhuma foto é armazenada.
+      </li>
+      <li>
+        <strong>Conteúdo do código escaneado:</strong> os dados do Pix ou boleto (valor,
+        vencimento, beneficiário, linha digitável, etc.) são processados e validados
+        (checksum módulo 10/11 para boleto, CRC16 para Pix) diretamente no aparelho.
+      </li>
+      <li>
+        <strong>Histórico de leituras:</strong> se você optar por salvar uma leitura, ela é
+        guardada apenas no armazenamento local do próprio dispositivo. Esse histórico nunca sai
+        do aparelho e pode ser apagado a qualquer momento dentro do app ou desinstalando o
+        aplicativo.
+      </li>
+      <li>
+        <strong>Área de transferência (clipboard):</strong> ao tocar em "copiar", o código lido é
+        copiado para a área de transferência do sistema, para que você possa colar em outro app
+        (ex.: seu banco).
+      </li>
+    </ul>
+
+    <h2>3. O que o app NÃO faz</h2>
+    <ul>
+      <li>Não exige login, cadastro ou conta de usuário.</li>
+      <li>Não possui servidor ou backend próprio: nenhum dado escaneado é enviado pela internet.</li>
+      <li>Não contém anúncios.</li>
+      <li>Não usa SDKs de analytics, rastreamento ou publicidade de terceiros.</li>
+      <li>Não coleta, vende ou compartilha dados pessoais com terceiros.</li>
+      <li>Não acessa contatos, localização, arquivos ou outros dados do aparelho além do
+        necessário para a câmera e para salvar o histórico localmente.</li>
+    </ul>
+
+    <h2>4. Compartilhamento (recurso "Compartilhar")</h2>
+    <p>
+      Ao tocar em "compartilhar", o SoftScan abre o menu de compartilhamento nativo do Android.
+      A escolha de para onde enviar o conteúdo (WhatsApp, e-mail, etc.) é feita por você; o
+      SoftScan não tem acesso ao que acontece depois que o conteúdo sai desse menu e não recebe
+      nenhuma confirmação ou dado de volta.
+    </p>
+
+    <h2>5. Tela de doação (Pix)</h2>
+    <p>
+      O app exibe uma chave Pix estática para quem desejar apoiar o projeto voluntariamente. O
+      SoftScan apenas copia essa chave para a área de transferência: o pagamento em si é feito
+      pelo seu próprio aplicativo bancário, fora do SoftScan. O app não coleta, processa ou tem
+      acesso a nenhum dado sobre eventuais doações (valor, data, dados bancários do doador, etc.).
+    </p>
+
+    <h2>6. Armazenamento e segurança</h2>
+    <p>
+      Todos os dados de uso do app (histórico de leituras) ficam salvos localmente no
+      armazenamento do dispositivo, protegidos pelas mesmas proteções do sistema operacional
+      Android para dados de aplicativos. Ao desinstalar o SoftScan, esses dados são removidos
+      junto com o app.
+    </p>
+
+    <h2>7. Crianças</h2>
+    <p>
+      O SoftScan não é direcionado a crianças e não coleta intencionalmente dados de menores de
+      idade. Como o app não coleta dados pessoais de ninguém, isso vale igualmente para usuários
+      de qualquer idade.
+    </p>
+
+    <h2>8. Alterações nesta política</h2>
+    <p>
+      Esta política pode ser atualizada caso o app ganhe novas funcionalidades que alterem o
+      tratamento de dados. A versão mais recente estará sempre disponível nesta mesma página, com
+      a data de atualização indicada no topo.
+    </p>
+
+    <h2>9. Contato</h2>
+    <p>
+      Dúvidas sobre esta política ou sobre o tratamento de dados no SoftScan podem ser enviadas
+      para <a href="mailto:felipe.silva151411@gmail.com">felipe.silva151411@gmail.com</a>.
+    </p>
+
+    <footer>
+      SoftScan — aplicativo local de leitura de Pix e boleto. Este documento é publicado em
+      <code>https://felipesilva54.github.io/softscan/</code>.
+    </footer>
+  </div>
+</body>
+</html>
