@@ -1,5 +1,5 @@
 diff --git a/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt b/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
-index d9690e3..aa946b8 100644
+index d9690e3..be914cc 100644
 --- a/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
 +++ b/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
 @@ -85,6 +85,7 @@ import kotlinx.coroutines.launch
@@ -24,7 +24,7 @@ index d9690e3..aa946b8 100644
    private val currentActivity
      get() = appContext.throwingActivity as AppCompatActivity
  
-@@ -531,7 +539,16 @@ class ExpoCameraView(
+@@ -531,7 +539,21 @@ class ExpoCameraView(
      ImageAnalysis.Builder()
        .setResolutionSelector(
          ResolutionSelector.Builder()
@@ -32,17 +32,22 @@ index d9690e3..aa946b8 100644
 +          // HIGHEST_AVAILABLE_STRATEGY faz o ML Kit analisar cada frame na maior
 +          // resolução que a câmera oferece (ex: 4000x3000+), o que pode levar
 +          // segundos por frame em aparelhos médios/entrada — daí a demora percebida
-+          // ao escanear. 1280x720 é a resolução que o próprio Google recomenda nos
-+          // exemplos de ML Kit/CameraX para leitura de código de barras em tempo
-+          // real: suficiente para decodificar QR e barras 1D, mas ordens de
-+          // magnitude mais rápida de processar.
++          // ao escanear.
++          //
++          // Já 1280x720 (tentativa anterior) é rápido, mas baixo demais para o
++          // código de barras de boleto: são 44 dígitos em ITF, com barras finas e
++          // muito juntas, e em 720p faltam pixels por barra — o ML Kit decodifica
++          // só parte do código e devolve uma leitura PARCIAL (ex: "848..." truncado).
++          // 1920x1080 dá pixels suficientes por barra para ler o boleto inteiro,
++          // continuando ~6x mais leve que os 4K+ do modo HIGHEST (com a análise
++          // ainda em thread separada + KEEP_ONLY_LATEST, a fluidez se mantém).
 +          .setResolutionStrategy(
-+            ResolutionStrategy(Size(1280, 720), ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER)
++            ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER)
 +          )
            .build()
        )
        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-@@ -539,8 +556,12 @@ class ExpoCameraView(
+@@ -539,8 +561,12 @@ class ExpoCameraView(
        .also { analyzer ->
          if (shouldScanBarcodes && CameraUtils.isMLKitBarcodeScannerAvailable()) {
            try {

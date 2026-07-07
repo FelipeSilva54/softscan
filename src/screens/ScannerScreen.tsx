@@ -56,6 +56,17 @@ export function ScannerScreen() {
   function handleBarcodeScanned({ data, type }: BarcodeScanningResult) {
     if (scanned) return;
 
+    // O ITF (código de barras de boleto) não carrega verificação de comprimento
+    // na própria simbologia, então o leitor às vezes decodifica só um PEDAÇO das
+    // barras e devolve uma leitura parcial (ex: "848" seguido de lixo, com menos
+    // de 44 dígitos) — que aparecia como "código estranho" na tela. Todo boleto
+    // tem exatamente 44 dígitos: descartamos silenciosamente qualquer leitura
+    // fora disso e seguimos escaneando, em vez de aceitar a leitura corrompida.
+    if (mode !== 'pix' && data.replace(/\D/g, '').length !== 44) {
+      pendingScanRef.current = null;
+      return;
+    }
+
     const pending = pendingScanRef.current;
     const count = pending?.data === data ? pending.count + 1 : 1;
     pendingScanRef.current = { data, count };
