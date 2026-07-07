@@ -1,8 +1,30 @@
 diff --git a/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt b/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
-index d9690e3..2a412b4 100644
+index d9690e3..aa946b8 100644
 --- a/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
 +++ b/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
-@@ -531,7 +531,16 @@ class ExpoCameraView(
+@@ -85,6 +85,7 @@ import kotlinx.coroutines.launch
+ import java.io.File
+ import java.lang.Float.max
+ import java.lang.Float.min
++import java.util.concurrent.Executors
+ import kotlin.math.roundToInt
+ import kotlin.properties.Delegates
+ 
+@@ -97,6 +98,13 @@ class ExpoCameraView(
+   appContext: AppContext
+ ) : ExpoView(context, appContext),
+   CameraViewInterface {
++  companion object {
++    // Compartilhado entre instâncias: o app só tem uma CameraView ativa por vez
++    // (tela do Scanner), então uma única thread de background é suficiente e
++    // evita criar/vazar uma thread nova a cada montagem da tela.
++    private val barcodeAnalysisExecutor by lazy { Executors.newSingleThreadExecutor() }
++  }
++
+   private val currentActivity
+     get() = appContext.throwingActivity as AppCompatActivity
+ 
+@@ -531,7 +539,16 @@ class ExpoCameraView(
      ImageAnalysis.Builder()
        .setResolutionSelector(
          ResolutionSelector.Builder()
@@ -20,3 +42,17 @@ index d9690e3..2a412b4 100644
            .build()
        )
        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+@@ -539,8 +556,12 @@ class ExpoCameraView(
+       .also { analyzer ->
+         if (shouldScanBarcodes && CameraUtils.isMLKitBarcodeScannerAvailable()) {
+           try {
++            // Rodar a análise numa thread dedicada em vez da main thread: se a UI
++            // estiver ocupada (overlay, animações, ponte com o JS), a entrega de
++            // frames pro ML Kit não fica na fila atrás desse trabalho, o que ajuda
++            // a evitar lentidão perceptível na detecção do código de barras.
+             analyzer.setAnalyzer(
+-              ContextCompat.getMainExecutor(context),
++              barcodeAnalysisExecutor,
+               BarcodeAnalyzer(barcodeFormats) {
+                 onBarcodeScanned(it)
+               }

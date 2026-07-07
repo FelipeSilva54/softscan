@@ -7,6 +7,10 @@ export interface BoletoData {
   // barras, não um "boleto inválido".
   isRecognized: boolean;
   rawBarcode: string;
+  // Formato que o banco espera ao colar/digitar o boleto pra pagamento manual
+  // (o código de barras cru não é aceito do mesmo jeito). Só existe quando
+  // isRecognized é true — o cálculo depende do código já estar no formato certo.
+  linhaDigitavel?: string;
   format: BoletoFormat;
   bankCode?: string;
   bankName?: string;

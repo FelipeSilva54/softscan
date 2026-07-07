@@ -16,23 +16,17 @@ import { parseBoletoBarcode } from '../parsers/boletoParser';
 import { parsePixPayload } from '../parsers/pixParser';
 import { colors, spacing, textStyles } from '../theme';
 
-// Modo "boleto" (card "Código de Barras" da Home) não fica restrito ao
-// ITF-14: lê qualquer formato 1D/2D não-QR suportado pela lib, e o parser
-// de boleto decide se o conteúdo lido é um boleto de verdade ou não.
-const NON_QR_BARCODE_TYPES: BarcodeType[] = [
-  'itf14',
-  'code128',
-  'code39',
-  'code93',
-  'codabar',
-  'ean13',
-  'ean8',
-  'upc_a',
-  'upc_e',
-  'pdf417',
-  'datamatrix',
-  'aztec',
-];
+// Todo boleto brasileiro — cobrança bancária ou convênio/arrecadação (água, luz,
+// telefone/internet etc), sem exceção — usa uma única simbologia definida pelo
+// padrão FEBRABAN: Intercalado 2 de 5 (ITF), sempre 44 dígitos. Não existe boleto
+// em code128/ean/upc/pdf417/datamatrix/aztec: esses são formatos de varejo/logística.
+// Habilitar todos eles ao mesmo tempo fazia o ML Kit testar 12 decodificadores por
+// frame (câmera muito mais lenta) e ainda causava leituras erradas: um padrão de
+// barras borrado/parcial do próprio boleto (ou de outro elemento impresso na conta)
+// podia bater por engano com um formato curto como EAN-8/UPC-E/CODE39 antes do
+// código real ser lido corretamente. Restringir a ITF-14 resolve os dois problemas
+// sem perder nenhum tipo de boleto.
+const NON_QR_BARCODE_TYPES: BarcodeType[] = ['itf14'];
 
 export function ScannerScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

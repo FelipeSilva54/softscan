@@ -36,7 +36,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#F5F7F8"
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "extra": {
       "eas": {

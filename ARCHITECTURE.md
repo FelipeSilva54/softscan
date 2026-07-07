@@ -42,7 +42,7 @@ Menu (acessível via Home)
     Icon.tsx              # wrapper pros SVGs customizados
   /parsers
     pixParser.ts           # decodifica payload EMVCo/BR Code
-    boletoParser.ts        # decodifica linha digitável (47/48 dígitos)
+    boletoParser.ts        # decodifica código de barras (44 dígitos): cobrança ou convênio
   /validators
     crc16.ts                # checksum do PIX
     modulo10.ts              # checksum de blocos do boleto

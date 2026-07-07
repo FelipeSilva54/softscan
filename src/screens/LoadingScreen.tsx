@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Asset } from 'expo-asset';
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,6 +24,10 @@ export function LoadingScreen() {
       })
     );
     spin.start();
+
+    // Baixa/decodifica a imagem da tela de doação em segundo plano, assim ela
+    // já está em cache quando o usuário chegar lá e não demora pra aparecer.
+    Asset.fromModule(require('../../assets/Donate-image.png')).downloadAsync();
 
     const timeout = setTimeout(() => {
       navigation.reset({ index: 0, routes: [{ name: 'Home' }] });

@@ -205,6 +205,7 @@ export function ResultScreen() {
               <Value caption="Valor" value={formatCurrency(data.amount)} />
               <Value caption="Vencimento" value={formatDate(data.dueDate)} />
               <Value caption="Instituição" value={data.bankName ?? `Banco ${data.bankCode ?? ''}`} />
+              <Value caption="Linha digitável" value={data.linhaDigitavel ?? data.rawBarcode} />
               <Value caption="Código de barras" value={data.rawBarcode} />
             </>
           )}
@@ -218,12 +219,14 @@ export function ResultScreen() {
           <CardButtonSmall
             label="Copiar código"
             icon="copy"
-            onPress={() => copyToClipboard(type === 'pix' ? data.rawPayload : data.rawBarcode)}
+            onPress={() =>
+              copyToClipboard(type === 'pix' ? data.rawPayload : data.linhaDigitavel ?? data.rawBarcode)
+            }
           />
           <CardButtonSmall
             label="Compartilhar"
             icon="share"
-            onPress={() => shareCode(type === 'pix' ? data.rawPayload : data.rawBarcode)}
+            onPress={() => shareCode(type === 'pix' ? data.rawPayload : data.linhaDigitavel ?? data.rawBarcode)}
           />
           {isSaved ? (
             <>
