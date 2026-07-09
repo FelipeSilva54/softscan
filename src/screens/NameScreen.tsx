@@ -33,7 +33,7 @@ export function NameScreen() {
             <Text style={styles.titleSecondary}>Antes de começarmos,</Text>
             <Text style={styles.titlePrimary}>Como você se chama?</Text>
           </View>
-          <Text style={styles.subtitle}>Digite somente o primeiro nome</Text>
+          <Text style={styles.subtitle}>Digite somente o primeiro nome.</Text>
           <Input
             value={name}
             onChangeText={setName}

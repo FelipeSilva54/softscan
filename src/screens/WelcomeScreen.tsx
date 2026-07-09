@@ -19,7 +19,7 @@ export function WelcomeScreen() {
     <View style={styles.safe}>
       <View style={styles.imagePlaceholder} />
       <View style={[styles.card, { paddingBottom: spacing.lg + insets.bottom }]}>
-        <AppLogo size={48} />
+        <AppLogo size={40} />
         <Text style={styles.title}>Olá, seja bem-vindo{'\n'}ao Softscan</Text>
         <Text style={styles.subtitle}>
           Escaneie, valide e copie boletos e QR Codes Pix.
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     paddingHorizontal: spacing.lg,
-    paddingTop: 36,
+    paddingTop: 32,
   },
   title: {
     ...textStyles.heading,
@@ -55,6 +55,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   button: {
-    marginTop: 40,
+    marginTop: 40
   },
 });
