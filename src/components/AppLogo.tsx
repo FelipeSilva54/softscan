@@ -1,5 +1,6 @@
 import React from 'react';
 import { Circle, G, Mask, Svg } from 'react-native-svg';
+import { colors } from '../theme';
 
 interface AppLogoProps {
   size?: number;
@@ -24,7 +25,7 @@ export function AppLogo({ size = 52 }: AppLogoProps) {
           cy={0.460328}
           r={16.5932}
           transform="rotate(-0.903464 25.4584 0.460328)"
-          fill="#0073C9"
+          fill={colors.primary}
         />
         <Circle
           opacity={0.4}
@@ -32,21 +33,21 @@ export function AppLogo({ size = 52 }: AppLogoProps) {
           cy={51.2562}
           r={16.5932}
           transform="rotate(-0.903464 26.2596 51.2562)"
-          fill="#0073C9"
+          fill={colors.primary}
         />
         <Circle
           cx={0.460809}
           cy={26.2592}
           r={16.5932}
           transform="rotate(-0.903464 0.460809 26.2592)"
-          fill="#0073C9"
+          fill={colors.primary}
         />
         <Circle
           cx={51.2382}
           cy={24.2943}
           r={16.5932}
           transform="rotate(-0.903464 51.2382 24.2943)"
-          fill="#0073C9"
+          fill={colors.primary}
         />
       </G>
     </Svg>

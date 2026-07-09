@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   title: {
     ...textStyles.heading,
     color: colors.secondary,
-    marginTop: 20,
+    marginTop: spacing.lg,
   },
   subtitle: {
     ...textStyles.subtitle,

@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   subtitle: {
     ...textStyles.body,
     color: colors.gray,
-    marginTop: 12,
+    marginTop: spacing.sm,
   },
   input: {
     marginTop: 64,

@@ -6,11 +6,18 @@ import {
   useFonts,
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
-import { StatusBar, View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect } from 'react';
+import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { colors } from './src/theme';
+
+// Mantém a splash nativa visível até as fontes terminarem de carregar, em vez
+// de trocar por uma tela intermediária em branco (flash perceptível em
+// aparelhos mais lentos).
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -20,16 +27,24 @@ export default function App() {
     PlusJakartaSans_700Bold,
   });
 
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: colors.background }} />;
+    return null;
   }
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
-        <AppNavigator />
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+          <AppNavigator />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }

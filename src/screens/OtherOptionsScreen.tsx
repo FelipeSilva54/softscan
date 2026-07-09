@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useState } from 'react';
-import { Platform, StyleSheet, Text, ToastAndroid, View } from 'react-native';
+import { Linking, Platform, Share, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CardButtonHorizontal } from '../components/CardButtonHorizontal';
 import { Header } from '../components/Header';
@@ -9,6 +9,19 @@ import { SaveResultSheet } from '../components/SaveResultSheet';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { getUserName, setUserName } from '../storage/userStorage';
 import { colors, spacing, textStyles } from '../theme';
+
+const ANDROID_PACKAGE = 'com.softscan.app';
+const PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${ANDROID_PACKAGE}`;
+
+async function shareApp() {
+  await Share.share({ message: `Escaneie e valide boletos e PIX com o SoftScan: ${PLAY_STORE_URL}` });
+}
+
+async function rateApp() {
+  const marketUrl = `market://details?id=${ANDROID_PACKAGE}`;
+  const canOpenMarket = await Linking.canOpenURL(marketUrl);
+  await Linking.openURL(canOpenMarket ? marketUrl : PLAY_STORE_URL);
+}
 
 export function OtherOptionsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -50,7 +63,7 @@ export function OtherOptionsScreen() {
           <CardButtonHorizontal
             label="Compartilhe com um amigo"
             icon="share"
-            onPress={() => {}}
+            onPress={shareApp}
           />
           <CardButtonHorizontal
             label="Apoie o SoftScan"
@@ -60,7 +73,7 @@ export function OtherOptionsScreen() {
           <CardButtonHorizontal
             label="Avalie o aplicativo"
             icon="hand-stars"
-            onPress={() => {}}
+            onPress={rateApp}
           />
         </View>
       </View>

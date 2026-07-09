@@ -2,6 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { HistoryRecord, NewHistoryRecord } from '../types/history.types';
 
 const HISTORY_KEY = '@softscan:history';
+// Evita que o histórico cresça sem limite (cada leitura/gravação relê e
+// reescreve a lista inteira do AsyncStorage) — mantém as mais recentes.
+const MAX_HISTORY_ITEMS = 200;
 
 export async function getAllScans(): Promise<HistoryRecord[]> {
   const raw = await AsyncStorage.getItem(HISTORY_KEY);
@@ -24,7 +27,8 @@ export async function saveScan(record: NewHistoryRecord): Promise<HistoryRecord>
     scannedAt: new Date().toISOString(),
   };
 
-  await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify([newRecord, ...scans]));
+  const updated = [newRecord, ...scans].slice(0, MAX_HISTORY_ITEMS);
+  await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
   return newRecord;
 }
 

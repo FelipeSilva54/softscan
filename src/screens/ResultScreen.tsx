@@ -39,6 +39,13 @@ async function shareCode(value: string) {
   await Share.share({ message: value });
 }
 
+function confirmOpenLink(url: string) {
+  Alert.alert('Abrir link externo', `Este código aponta para:\n${url}\n\nDeseja continuar?`, [
+    { text: 'Cancelar', style: 'cancel' },
+    { text: 'Abrir', onPress: () => Linking.openURL(url) },
+  ]);
+}
+
 const PIX_KEY_TYPE_LABELS: Record<string, string> = {
   cpf: 'Chave Pix (CPF)',
   cnpj: 'Chave Pix (CNPJ)',
@@ -135,7 +142,7 @@ export function ResultScreen() {
               <CardButtonSmall
                 label="Abrir link"
                 icon="open-link"
-                onPress={() => Linking.openURL(data.rawValue)}
+                onPress={() => confirmOpenLink(data.rawValue)}
               />
             ) : (
               <CardButtonSmall label="Copiar código" icon="copy" onPress={() => copyToClipboard(data.rawValue)} />
@@ -266,7 +273,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.lg,
-    paddingTop: 16,
+    paddingTop: spacing.md,
     paddingBottom: spacing.xl,
   },
   title: {

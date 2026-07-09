@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     ...textStyles.subheading,
     color: colors.secondary,
     textAlign: 'center',
-    marginTop: 24,
+    marginTop: spacing.xl,
   },
   permissionBody: {
     ...textStyles.body,

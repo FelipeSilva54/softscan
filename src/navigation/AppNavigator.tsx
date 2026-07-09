@@ -37,7 +37,9 @@ export function AppNavigator() {
   const [initialRoute, setInitialRoute] = useState<keyof RootStackParamList | null>(null);
 
   useEffect(() => {
-    getHasOnboarded().then((hasOnboarded) => setInitialRoute(hasOnboarded ? 'Loading' : 'Welcome'));
+    getHasOnboarded()
+      .then((hasOnboarded) => setInitialRoute(hasOnboarded ? 'Loading' : 'Welcome'))
+      .catch(() => setInitialRoute('Welcome'));
   }, []);
 
   if (!initialRoute) {
