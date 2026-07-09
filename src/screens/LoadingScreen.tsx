@@ -18,7 +18,7 @@ export function LoadingScreen() {
     const spin = Animated.loop(
       Animated.timing(spinAnim, {
         toValue: 1,
-        duration: 1000,
+        duration: 2000,
         easing: Easing.linear,
         useNativeDriver: true,
       })
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   title: {
     ...textStyles.heading,
     color: colors.secondary,
-    marginTop: 28,
+    marginTop: 14,
   },
   subtitle: {
     ...textStyles.subtitle,

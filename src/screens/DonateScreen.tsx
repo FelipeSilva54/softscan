@@ -30,6 +30,7 @@ export function DonateScreen() {
             source={require('../../assets/Donate-image.png')}
             style={styles.image}
             resizeMode="contain"
+            fadeDuration={0}
           />
           <Text style={styles.title}>Apoie o SoftScan 💙</Text>
           <Text style={styles.description}>
