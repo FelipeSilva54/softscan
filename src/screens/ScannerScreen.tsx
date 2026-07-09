@@ -53,6 +53,13 @@ export function ScannerScreen() {
 
   const shape = mode === 'pix' ? 'square' : 'rectangle';
   const frameSize = getFrameSize(shape, screenWidth);
+  // Arredondado uma única vez aqui: tanto o recorte da máscara quanto a borda
+  // (ambos desenhados no mesmo <Svg> mais abaixo) leem esses mesmos valores,
+  // então não têm como divergir por arredondamento ou fonte de medida diferente.
+  const holeX = Math.round((screenWidth - frameSize.width) / 2);
+  const holeY = 0;
+  const holeWidth = Math.round(frameSize.width);
+  const holeHeight = Math.round(frameSize.height);
   const screenTitle = mode === 'pix' ? 'Escaneie o QR Code' : 'Escaneie o código de barras';
   const instruction = mode === 'pix' ? 'Aponte a câmera para o QR Code' : 'Aponte a câmera para o código de barras';
 
@@ -217,15 +224,20 @@ export function ScannerScreen() {
         </View>
 
         <View style={[styles.maskMiddleRow, { height: frameSize.height }]}>
+          {/* holeX/holeY/holeWidth/holeHeight são calculados uma única vez, aqui,
+              e usados tanto pelo recorte da máscara quanto pela borda — os dois
+              são desenhados no mesmo <Svg>, então não existe uma segunda fonte
+              de medida (layout/Yoga) nem um segundo arredondamento que possa
+              divergir do primeiro. */}
           <Svg width={screenWidth} height={frameSize.height} style={StyleSheet.absoluteFill}>
             <Defs>
               <Mask id="scanHoleMask">
                 <Rect x={0} y={0} width={screenWidth} height={frameSize.height} fill="white" />
                 <Rect
-                  x={(screenWidth - frameSize.width) / 2}
-                  y={0}
-                  width={frameSize.width}
-                  height={frameSize.height}
+                  x={holeX}
+                  y={holeY}
+                  width={holeWidth}
+                  height={holeHeight}
                   rx={FRAME_RADIUS}
                   ry={FRAME_RADIUS}
                   fill="black"
@@ -240,10 +252,8 @@ export function ScannerScreen() {
               fill={OVERLAY_COLOR}
               mask="url(#scanHoleMask)"
             />
+            <ScannerFrame x={holeX} y={holeY} width={holeWidth} height={holeHeight} />
           </Svg>
-          <View style={{ width: frameSize.width }}>
-            <ScannerFrame shape={shape} screenWidth={screenWidth} />
-          </View>
         </View>
 
         <View style={styles.maskFill}>

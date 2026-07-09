@@ -1,17 +1,19 @@
 import React from 'react';
-import { Path, Svg } from 'react-native-svg';
+import { G, Path } from 'react-native-svg';
 import { colors } from '../theme';
 
 interface ScannerFrameProps {
-  shape: 'square' | 'rectangle';
-  screenWidth?: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 export const FRAME_RADIUS = 28;
 const STROKE_WIDTH = 2;
 const DASH_ARRAY = '28 20';
 
-export function getFrameSize(shape: ScannerFrameProps['shape'], screenWidth?: number) {
+export function getFrameSize(shape: 'square' | 'rectangle', screenWidth?: number) {
   if (shape === 'square') return { width: 260, height: 260 };
 
   // Código de barras de boleto pode ser bem longo; usa quase toda a
@@ -20,16 +22,23 @@ export function getFrameSize(shape: ScannerFrameProps['shape'], screenWidth?: nu
   return { width, height: 170 };
 }
 
-export function ScannerFrame({ shape, screenWidth }: ScannerFrameProps) {
-  const { width, height } = getFrameSize(shape, screenWidth);
-  const r = FRAME_RADIUS;
+// Desenha só a borda (sem <Svg> próprio) para ser embutida na MESMA árvore
+// SVG que recorta o overlay — x/y/width/height são exatamente o retângulo do
+// buraco da máscara (já arredondado pelo chamador), então os dois nunca podem
+// divergir por fonte de medida (SVG vs layout) ou por arredondamento distinto.
+export function ScannerFrame({ x, y, width, height }: ScannerFrameProps) {
   const inset = STROKE_WIDTH / 2;
-  const w = width - STROKE_WIDTH;
-  const h = height - STROKE_WIDTH;
-  const x0 = inset;
-  const y0 = inset;
-  const x1 = inset + w;
-  const y1 = inset + h;
+  const x0 = x + inset;
+  const y0 = y + inset;
+  const x1 = x + width - inset;
+  const y1 = y + height - inset;
+
+  // Deslocar um retângulo arredondado de raio R "pra dentro" por `inset`
+  // mantém o CENTRO do arco de cada canto fixo e reduz o raio em `inset`
+  // (rr = R - inset). Reusar o raio cheio aqui faria o centro do arco andar
+  // (+inset,+inset) em relação ao canto real do buraco da máscara — os dois
+  // arcos deixam de ser concêntricos e sobra uma fresta bem no canto.
+  const r = FRAME_RADIUS - inset;
 
   // Cantos e bordas são traçados como sub-paths separados: os cantos ficam
   // sólidos e as bordas retas recebem o tracejado, evitando que o dash
@@ -47,7 +56,7 @@ export function ScannerFrame({ shape, screenWidth }: ScannerFrameProps) {
     `M${x0},${y1 - r} L${x0},${y0 + r}`;
 
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+    <G>
       <Path d={corners} stroke={colors.white} strokeWidth={STROKE_WIDTH} fill="none" />
       <Path
         d={edges}
@@ -57,6 +66,6 @@ export function ScannerFrame({ shape, screenWidth }: ScannerFrameProps) {
         strokeLinecap="round"
         fill="none"
       />
-    </Svg>
+    </G>
   );
 }
