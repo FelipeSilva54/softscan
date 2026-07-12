@@ -22,6 +22,7 @@ export function WelcomeScreen() {
         source={require('../../assets/welcome-img.webp')}
         style={styles.background}
         resizeMode="cover"
+        onError={({ nativeEvent }) => console.warn('Falha ao carregar welcome-img:', nativeEvent.error)}
       />
       <LinearGradient
         colors={[colors.scrimSoft, colors.transparent]}
