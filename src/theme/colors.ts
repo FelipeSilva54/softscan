@@ -1,7 +1,7 @@
 export const colors = {
   primary: '#0073C9',
   secondary: '#022743',
-  gray: '#6F7277',
+  gray: '#70828F',
   text: '#171717',
   background: '#F6F7F7',
   white: '#FFFFFF',
@@ -9,4 +9,7 @@ export const colors = {
   error: '#D64545',
   border: '#DDE6E9',
   overlay: 'rgba(0, 0, 0, 0.55)',
+  scrimSoft: 'rgba(2, 39, 67, 0.55)',
+  scrimStrong: 'rgba(2, 39, 67, 0.92)',
+  transparent: 'transparent',
 } as const;

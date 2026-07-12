@@ -1,9 +1,10 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppLogo } from '../components/AppLogo';
 import { Button } from '../components/Button';
+import { SoftscanWordmark } from '../components/SoftscanWordmark';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { colors, spacing, textStyles } from '../theme';
 
@@ -17,14 +18,31 @@ export function WelcomeScreen() {
 
   return (
     <View style={styles.safe}>
-      <View style={styles.imagePlaceholder} />
-      <View style={[styles.card, { paddingBottom: spacing.lg + insets.bottom }]}>
-        <AppLogo size={40} />
-        <Text style={styles.title}>Olá, seja bem-vindo{'\n'}ao Softscan</Text>
-        <Text style={styles.subtitle}>
-          Escaneie, valide e copie boletos e QR Codes Pix.
-        </Text>
-        <Button label="Vamos lá" onPress={handleContinue} style={styles.button} />
+      <Image
+        source={require('../../assets/welcome-img.webp')}
+        style={styles.background}
+        resizeMode="cover"
+      />
+      <LinearGradient
+        colors={[colors.scrimSoft, colors.transparent]}
+        style={styles.topScrim}
+      />
+      <LinearGradient
+        colors={[colors.transparent, colors.scrimSoft, colors.scrimStrong]}
+        locations={[0, 0.4, 1]}
+        style={styles.bottomScrim}
+      />
+      <View style={styles.content}>
+        <View style={[styles.header, { paddingTop: insets.top + spacing.md }]}>
+          <SoftscanWordmark width={100} />
+        </View>
+        <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.lg }]}>
+          <Text style={styles.title}>Escaneie boletos e QR Codes com facilidade</Text>
+          <Text style={styles.subtitle}>
+            Leia boletos, códigos de barras e QR Codes PIX em segundos, de forma rápida e gratuita.
+          </Text>
+          <Button label="Vamos lá" onPress={handleContinue} style={styles.button} />
+        </View>
       </View>
     </View>
   );
@@ -33,28 +51,49 @@ export function WelcomeScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.secondary,
   },
-  imagePlaceholder: {
-    height: '55%',
-    backgroundColor: colors.primary,
+  background: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
-  card: {
+  topScrim: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 180,
+  },
+  bottomScrim: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '52%',
+  },
+  content: {
     flex: 1,
+    justifyContent: 'space-between',
+  },
+  header: {
     paddingHorizontal: spacing.lg,
-    paddingTop: 32,
+  },
+  footer: {
+    paddingHorizontal: spacing.lg,
   },
   title: {
     ...textStyles.heading,
-    color: colors.secondary,
-    marginTop: spacing.lg,
+    color: colors.white,
   },
   subtitle: {
-    ...textStyles.subtitle,
-    color: colors.gray,
+    ...textStyles.body,
+    color: colors.background,
     marginTop: spacing.sm,
   },
   button: {
-    marginTop: 40
+    marginTop: spacing.xl,
   },
 });
