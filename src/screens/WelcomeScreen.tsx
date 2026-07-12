@@ -21,7 +21,6 @@ export function WelcomeScreen() {
       <Image
         source={require('../../assets/welcome-img.webp')}
         style={styles.background}
-        resizeMode="cover"
         onError={({ nativeEvent }) => console.warn('Falha ao carregar welcome-img:', nativeEvent.error)}
       />
       <LinearGradient
@@ -38,9 +37,9 @@ export function WelcomeScreen() {
           <SoftscanWordmark width={100} />
         </View>
         <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.lg }]}>
-          <Text style={styles.title}>Escaneie boletos e QR Codes com facilidade</Text>
+          <Text style={styles.title}>Escaneie qualquer código em poucos segundos</Text>
           <Text style={styles.subtitle}>
-            Leia boletos, códigos de barras e QR Codes PIX em segundos, de forma rápida e gratuita.
+            Leia, copie e compartilhe códigos de barras e QR Codes. Simples, grautito e sem anúncios.
           </Text>
           <Button label="Vamos lá" onPress={handleContinue} style={styles.button} />
         </View>
@@ -60,6 +59,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
   },
   topScrim: {
     position: 'absolute',

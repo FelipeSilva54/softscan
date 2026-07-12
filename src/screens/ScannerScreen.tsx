@@ -1,9 +1,10 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { BarcodeScanningResult, BarcodeType, CameraView, useCameraPermissions } from 'expo-camera';
+import * as NavigationBar from 'expo-navigation-bar';
 import { StatusBar } from 'expo-status-bar';
-import React, { useRef, useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Linking, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Defs, Mask, Rect, Svg } from 'react-native-svg';
 import { FRAME_RADIUS, getFrameSize, ScannerFrame } from '../components/ScannerFrame';
@@ -50,6 +51,16 @@ export function ScannerScreen() {
   const [scanned, setScanned] = useState(false);
   const [invalidVisible, setInvalidVisible] = useState(false);
   const pendingScanRef = useRef<{ data: string; count: number } | null>(null);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android' || !permission?.granted) {
+      return;
+    }
+    NavigationBar.setStyle('dark');
+    return () => {
+      NavigationBar.setStyle('light');
+    };
+  }, [permission?.granted]);
 
   const shape = mode === 'pix' ? 'square' : 'rectangle';
   const frameSize = getFrameSize(shape, screenWidth);

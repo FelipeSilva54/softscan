@@ -6,9 +6,10 @@ import {
   useFonts,
 } from '@expo-google-fonts/plus-jakarta-sans';
 import { NavigationContainer } from '@react-navigation/native';
+import * as NavigationBar from 'expo-navigation-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { AppNavigator } from './src/navigation/AppNavigator';
@@ -32,6 +33,12 @@ export default function App() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      NavigationBar.setStyle('light');
+    }
+  }, []);
 
   if (!fontsLoaded) {
     return null;

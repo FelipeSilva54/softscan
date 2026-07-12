@@ -37,7 +37,13 @@
           "backgroundColor": "#F5F7F8"
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-navigation-bar",
+        {
+          "enforceContrast": false
+        }
+      ]
     ],
     "extra": {
       "eas": {
